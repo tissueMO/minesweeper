@@ -19,6 +19,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-common-types": "^6.5.1",
     "@pandacss/dev": "^0.31.0",
     "@types/node": "^20",
     "@types/react": "^18",

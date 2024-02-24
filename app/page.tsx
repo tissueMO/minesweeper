@@ -1,13 +1,12 @@
 'use client';
 
-import Image from 'next/image';
-import { Digits } from '@/components/digits/digits';
-import { Panel } from '@/components/panel/panel';
-import { useState } from 'react';
+import { NikoChanButton } from '@/components/buttons';
+import { Digits } from '@/components/digits';
+import { Logo } from '@/components/logo';
+import { Panel } from '@/components/panel';
 import { css, cx } from '@/styled-system/css';
-import { border3d, button, center, flex } from '@/styled-system/patterns';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import { border3d, center, flex } from '@/styled-system/patterns';
+import { useRef, useState } from 'react';
 
 type Level = {
   difficulity: number;
@@ -40,114 +39,94 @@ const LEVELS: Record<string, Level> = {
 export default function Home() {
   const [timeSeconds, setTimeSeconds] = useState(0);
   const [selectedLevelDetail, setSelectedLevelDetail] = useState(LEVELS['簡単']);
-  // const timer = useRef<ReturnType<typeof setTimeout> | null>();
+  const timer = useRef<ReturnType<typeof setTimeout> | null>();
+
+  const onStart = () => {
+    console.log('START');
+    setTimeSeconds(0);
+    timer.current = setInterval(() => setTimeSeconds(timeSeconds + 1), 1000);
+  };
+
+  const onEnd = (cleared: boolean) => {
+    console.log('END:', cleared);
+    if (timer.current?.hasRef) {
+      clearInterval(timer.current);
+    }
+
+    // TODO: ゲームの結果に応じてニコちゃんマークの表情を切り替える
+    // emotion = cleared ? 'laugh-beam' : 'dizzy';
+  };
+
+  const onReset = () => {
+    console.log('RESET');
+  };
 
   return (
-    <main className={flex({ direction: 'column' })}>
-      <div
-        className={cx(
-          css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' }),
-          flex({ align: 'center' }),
-          center(),
-        )}
-      >
-        <Image src="/logo.svg" alt="Minesweeper Logo" width={180} height={37} priority className={logoStyle} />
-        <span className={css({ margin: '0 0.1rem', fontWeight: '900' })}>マインスイーパー</span>
-        <Image src="/logo.svg" alt="Minesweeper Logo" width={180} height={37} priority className={logoStyle} />
+    <main className={mainStyle}>
+      <div className={headerStyle}>
+        <Logo />
+        <span className={titleStyle}>マインスイーパー</span>
+        <Logo />
       </div>
 
-      <div className={cx(css({ marginBottom: '2rem' }), flex({ align: 'center' }), center())}>
+      <div className={controllersStyle}>
         <label htmlFor="level">難易度: </label>
+        {/* TODO: 難易度コンボボックスのスタイル */}
+        {/* TODO: レベル選択時に画面に反映 */}
         <select id="level">
-          {Object.entries(LEVELS).map(([name, level]) => (
-            <option>{name}</option>
+          {Object.keys(LEVELS).map((name) => (
+            <option value={name}>{name}</option>
           ))}
         </select>
       </div>
 
       <div className={center()}>
-        <div
-          className={cx(
-            css({ padding: '12px' }),
-            border3d({
-              borderWidth: '8px',
-              leftTopColor: '#eeeeee',
-              rightBottomColor: '#808080',
-              backgroundColor: 'lightgray',
-            }),
-          )}
-        >
-          <div
-            className={cx(
-              css({
-                margin: '0 auto',
-                marginBottom: '0.5rem',
-                padding: '0.5rem 0.8rem',
-              }),
-              flex({ wrap: 'nowrap' }),
-              border3d({
-                borderWidth: '4px',
-                leftTopColor: '#808080',
-                rightBottomColor: '#dfdfdf',
-                backgroundColor: 'lightgray',
-              }),
-            )}
-          >
-            {/* 地雷数 */}
+        <div className={panelWrapperStyle}>
+          <div className={panelHeaderStyle}>
             <Digits value={selectedLevelDetail.mineCount} />
-
-            {/* リセットボタン: ニコちゃんマーク */}
-            <div
-              className={cx(
-                button(),
-                css({
-                  minWidth: '0',
-                  minHeight: '0',
-                  padding: '0.5rem',
-                  margin: '0 0.5rem',
-                }),
-              )}
-            >
-              <div
-                className={cx(
-                  css({
-                    margin: '0 auto',
-                    width: '3rem',
-                    height: '3rem',
-                    borderRadius: '50%',
-                    position: 'relative',
-                    bgColor: '#000',
-                  }),
-                  flex({ justifyContent: 'center', alignItems: 'center' }),
-                )}
-              >
-                <FontAwesomeIcon
-                  icon={faFaceSmile}
-                  size="3x"
-                  className={css({
-                    width: '40px',
-                    height: '40px',
-                    margin: '0',
-                    color: 'yellow',
-                  })}
-                />
-              </div>
-            </div>
-
-            {/* 経過時間 */}
+            <NikoChanButton size="3x" onClick={onReset} />
             <Digits value={timeSeconds} />
           </div>
-
-          {/* タイル盤面 */}
-          <Panel width={7} height={10} />
+          <Panel width={7} height={10} onStart={onStart} onEnd={onEnd} />
         </div>
       </div>
     </main>
   );
 }
 
-const logoStyle = css({
-  width: '5rem',
-  height: '5rem',
-  margin: '0',
-});
+const mainStyle = flex({ direction: 'column' });
+
+const titleStyle = css({ margin: '0 0.1rem', fontWeight: '900' });
+
+const headerStyle = cx(
+  center(),
+  flex({ align: 'center' }),
+  css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' }),
+);
+
+const controllersStyle = cx(center(), css({ marginBottom: '2rem' }), flex({ align: 'center' }));
+
+const panelWrapperStyle = cx(
+  css({ padding: '12px' }),
+  border3d({
+    borderWidth: '8px',
+    leftTopColor: '#eeeeee',
+    rightBottomColor: '#808080',
+    backgroundColor: 'lightgray',
+  }),
+);
+
+const panelHeaderStyle = cx(
+  flex({ wrap: 'nowrap' }),
+  css({
+    margin: '0 auto',
+    marginBottom: '0.5rem',
+    padding: '0.5rem 0.8rem',
+  }),
+  border3d({
+    borderWidth: '4px',
+    leftTopColor: '#808080',
+    rightBottomColor: '#dfdfdf',
+    backgroundColor: 'lightgray',
+  }),
+);
