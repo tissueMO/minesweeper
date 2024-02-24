@@ -29,7 +29,7 @@ const buttonStyle = cx(
   css({
     minWidth: '0',
     minHeight: '0',
-    padding: '0.5rem',
+    padding: '0.25rem',
     margin: '0 0.5rem',
   }),
 );
@@ -47,8 +47,8 @@ const buttonInnerStyle = cx(
 );
 
 const iconStyle = css({
-  width: '40px',
-  height: '40px',
+  width: '2.9rem',
+  height: '2.9rem',
   margin: '0',
   color: 'yellow',
 });

@@ -1,8 +1,9 @@
 'use client';
 
-import { flex } from '@/styled-system/patterns';
+import { border3d, flex } from '@/styled-system/patterns';
 import { useEffect, useState } from 'react';
 import { Tile } from './tile';
+import { css } from '@/styled-system/css';
 
 type Tile = {
   row: number;
@@ -15,9 +16,9 @@ type Tile = {
 };
 
 type Props = {
-  width?: number;
-  height?: number;
-  mines?: number;
+  width: number;
+  height: number;
+  mines: number;
   frozen?: boolean;
   onStart?: () => void;
   onEnd?: (cleared: boolean) => void;
@@ -26,14 +27,7 @@ type Props = {
 /**
  * マインスイーパー盤面
  */
-export const Panel = ({
-  width = 7,
-  height = 9,
-  mines = 10,
-  frozen = false,
-  onStart = () => {},
-  onEnd = (cleared) => {},
-}: Props) => {
+export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}, onEnd = (cleared) => {} }: Props) => {
   // 周囲8タイルを数えるのに使うオフセット用行列
   const OFFSET_MATRIX = [
     [
@@ -62,7 +56,7 @@ export const Panel = ({
     // this.startGame();
     // this.putMines(row, col);
     // this.applyNumbers();
-
+    console.log('Panel.start');
     setStarted(true);
     onStart?.();
   };
@@ -84,6 +78,7 @@ export const Panel = ({
     if (tile.hasMine) {
       // this.gameOver();
       // this.openMinesAndFlagsAll();
+      setCleared(true);
       onEnd?.(false);
       return;
     }
@@ -92,6 +87,7 @@ export const Panel = ({
     if (safeCountOfRemaining() === 0) {
       // this.closedTiles.forEach((tile) => that.flag([tile.row, tile.col, true]));
       // this.clearGame();
+      setDead(true);
       onEnd?.(true);
       return;
     }
@@ -110,15 +106,6 @@ export const Panel = ({
       );
     }, 0);
   };
-
-  /**
-   * 盤面を初期化します。
-   */
-  useEffect(() => {
-    timers.forEach((timer) => clearTimeout(timer));
-    setTimers([]);
-    initTiles(width, height);
-  }, []);
 
   /**
    * 空の盤面を生成します。
@@ -141,8 +128,18 @@ export const Panel = ({
     );
   };
 
+  /**
+   * 盤面を初期化します。
+   */
+  useEffect(() => {
+    console.log('Refresh Panel:', { width, height });
+    timers.forEach((timer) => clearTimeout(timer));
+    setTimers([]);
+    initTiles(width, height);
+  }, [width, height, mines]);
+
   return (
-    <div>
+    <div className={panelStyle}>
       {tiles.map((row) => (
         <div className={flex({ direction: 'row' })}>
           {row.map((tile) => (
@@ -154,3 +151,10 @@ export const Panel = ({
     </div>
   );
 };
+
+const panelStyle = border3d({
+  borderWidth: '5px',
+  leftTopColor: '#808080',
+  rightBottomColor: '#dfdfdf',
+  backgroundColor: '#d3d3d3',
+});

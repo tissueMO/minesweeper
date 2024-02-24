@@ -25,8 +25,10 @@ export const Tile = ({ number = 0, hasMine = false, badFlagged = false, frozen =
     return !opened && !flagged && !frozen;
   };
   const open = () => {
-    setOpened(true);
-    onOpen?.();
+    if (canOpen()) {
+      setOpened(true);
+      onOpen?.();
+    }
   };
   const flag = (e: MouseEvent | null) => {
     if (!e || e.button === 2) {
@@ -51,8 +53,14 @@ export const Tile = ({ number = 0, hasMine = false, badFlagged = false, frozen =
 
   return (
     <div className={tileStyle}>
-      <input type="checkbox" onClick={open} disabled={!canOpen()} checked={opened} className={checkboxStyle} />
-      <label onMouseUp={flag} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} className={labelStyle} />
+      <input type="checkbox" disabled={!canOpen()} checked={opened} className={checkboxStyle} />
+      <label
+        onClick={open}
+        onMouseUp={flag}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        className={labelStyle}
+      />
       {/* TODO: 地雷: transition要素をどうするか */}
       {/* TODO: フラグ */}
       {/* TODO: スカフラグ */}
@@ -96,7 +104,6 @@ const tileStyle = cx(
 const size = 32;
 
 const numberStyleBase = {
-  // TODO: @extend .font-notosans-bold;
   fontSize: `${size - 8}px`,
   lineHeight: size,
 };

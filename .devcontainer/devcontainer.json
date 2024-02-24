@@ -4,6 +4,7 @@
   "service": "app",
   "workspaceFolder": "/app/src",
   "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
+  "postStartCommand": "yarn prepare && yarn dev",
   "customizations": {
     "vscode": {
       "extensions": [

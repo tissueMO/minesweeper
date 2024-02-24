@@ -9,36 +9,36 @@ import { border3d, center, flex } from '@/styled-system/patterns';
 import { useRef, useState } from 'react';
 
 type Level = {
-  difficulity: number;
-  sizeWidth: number;
-  sizeHeight: number;
-  mineCount: number;
+  caption: string;
+  width: number;
+  height: number;
+  mines: number;
 };
 
-const LEVELS: Record<string, Level> = {
-  簡単: {
-    difficulity: 0,
-    sizeWidth: 9,
-    sizeHeight: 9,
-    mineCount: 10,
+const LEVELS: Level[] = [
+  {
+    caption: '簡単',
+    width: 9,
+    height: 9,
+    mines: 10,
   },
-  普通: {
-    difficulity: 1,
-    sizeWidth: 16,
-    sizeHeight: 16,
-    mineCount: 40,
+  {
+    caption: '普通',
+    width: 16,
+    height: 16,
+    mines: 40,
   },
-  難しい: {
-    difficulity: 2,
-    sizeWidth: 30,
-    sizeHeight: 16,
-    mineCount: 99,
+  {
+    caption: '難しい',
+    width: 30,
+    height: 16,
+    mines: 99,
   },
-};
+];
 
 export default function Home() {
   const [timeSeconds, setTimeSeconds] = useState(0);
-  const [selectedLevelDetail, setSelectedLevelDetail] = useState(LEVELS['簡単']);
+  const [selectedLevel, setSelectedLevel] = useState({ ...LEVELS[0] });
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
   const onStart = () => {
@@ -61,6 +61,10 @@ export default function Home() {
     console.log('RESET');
   };
 
+  const onLevelSelect = (index: string) => {
+    setSelectedLevel({ ...LEVELS[Number.parseInt(index)] });
+  };
+
   return (
     <main className={mainStyle}>
       <div className={headerStyle}>
@@ -70,12 +74,12 @@ export default function Home() {
       </div>
 
       <div className={controllersStyle}>
-        <label htmlFor="level">難易度: </label>
-        {/* TODO: 難易度コンボボックスのスタイル */}
-        {/* TODO: レベル選択時に画面に反映 */}
-        <select id="level">
-          {Object.keys(LEVELS).map((name) => (
-            <option value={name}>{name}</option>
+        <label htmlFor="level" className={labelStyle}>
+          難易度:
+        </label>
+        <select className={comboBoxStyle} onChange={(e) => onLevelSelect(e.target.value)}>
+          {Object.entries(LEVELS).map(([index, { caption }]) => (
+            <option value={index}>{caption}</option>
           ))}
         </select>
       </div>
@@ -83,11 +87,17 @@ export default function Home() {
       <div className={center()}>
         <div className={panelWrapperStyle}>
           <div className={panelHeaderStyle}>
-            <Digits value={selectedLevelDetail.mineCount} />
+            <Digits value={selectedLevel.mines} />
             <NikoChanButton size="3x" onClick={onReset} />
             <Digits value={timeSeconds} />
           </div>
-          <Panel width={7} height={10} onStart={onStart} onEnd={onEnd} />
+          <Panel
+            width={selectedLevel.width}
+            height={selectedLevel.height}
+            mines={selectedLevel.mines}
+            onStart={onStart}
+            onEnd={onEnd}
+          />
         </div>
       </div>
     </main>
@@ -104,9 +114,19 @@ const headerStyle = cx(
   css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' }),
 );
 
+const labelStyle = css({ marginRight: '0.5rem' });
+
+const comboBoxStyle = css({
+  width: '5rem',
+  fontSize: '85%',
+  borderWidth: '1px',
+  borderColor: 'rgb(118, 118, 118)',
+});
+
 const controllersStyle = cx(center(), css({ marginBottom: '2rem' }), flex({ align: 'center' }));
 
 const panelWrapperStyle = cx(
+  flex({ direction: 'column', justifyContent: 'center' }),
   css({ padding: '12px' }),
   border3d({
     borderWidth: '8px',
