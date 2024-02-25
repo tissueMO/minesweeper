@@ -15,6 +15,13 @@ type Level = {
   mines: number;
 };
 
+enum State {
+  Initialized = 'initialized',
+  Playing = 'playing',
+  Cleared = 'cleared',
+  Dead = 'dead',
+}
+
 const LEVELS: Level[] = [
   {
     caption: '簡単',
@@ -37,32 +44,81 @@ const LEVELS: Level[] = [
 ];
 
 export default function Home() {
-  const [timeSeconds, setTimeSeconds] = useState(0);
+  const [gameId, setGameId] = useState(new Date().getTime());
   const [selectedLevel, setSelectedLevel] = useState({ ...LEVELS[0] });
+  const [seconds, setSeconds] = useState(0);
+  const [state, setState] = useState(State.Initialized);
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
+  /**
+   * (イベント) ゲーム開始
+   */
   const onStart = () => {
-    console.log('START');
-    setTimeSeconds(0);
-    timer.current = setInterval(() => setTimeSeconds(timeSeconds + 1), 1000);
+    setState(State.Playing);
+
+    stopTimer();
+    setSeconds(0);
+    timer.current = setInterval(() => setSeconds((s) => s + 1), 1000);
   };
 
+  /**
+   * (イベント) ゲーム終了
+   */
   const onEnd = (cleared: boolean) => {
-    console.log('END:', cleared);
-    if (timer.current?.hasRef) {
-      clearInterval(timer.current);
-    }
+    setState(cleared ? State.Cleared : State.Dead);
 
-    // TODO: ゲームの結果に応じてニコちゃんマークの表情を切り替える
-    // emotion = cleared ? 'laugh-beam' : 'dizzy';
+    stopTimer();
   };
 
+  /**
+   * (イベント) ゲームリセット
+   */
   const onReset = () => {
-    console.log('RESET');
+    resetGame();
   };
 
-  const onLevelSelect = (index: string) => {
-    setSelectedLevel({ ...LEVELS[Number.parseInt(index)] });
+  /**
+   * (イベント) ゲーム難易度変更
+   */
+  const onLevelSelect = (index: number) => {
+    setSelectedLevel({ ...LEVELS[index] });
+
+    resetGame();
+  };
+
+  /**
+   * タイマーを停止します。
+   */
+  const stopTimer = () => {
+    clearInterval(timer?.current ?? undefined);
+    timer.current = null;
+  };
+
+  /**
+   * ゲームをリセットします。
+   */
+  const resetGame = () => {
+    // タイマー停止
+    stopTimer();
+    setSeconds(0);
+
+    // 盤面リセット
+    setGameId(new Date().getTime());
+  };
+
+  /**
+   * ゲーム状態に応じたニコちゃんボタンの表情を返します。
+   * @param state
+   */
+  const emotion = (state: State) => {
+    switch (state) {
+      case State.Cleared:
+        return 'laugh-beam';
+      case State.Dead:
+        return 'dizzy';
+      default:
+        return 'smile';
+    }
   };
 
   return (
@@ -74,10 +130,8 @@ export default function Home() {
       </div>
 
       <div className={controllersStyle}>
-        <label htmlFor="level" className={labelStyle}>
-          難易度:
-        </label>
-        <select className={comboBoxStyle} onChange={(e) => onLevelSelect(e.target.value)}>
+        <label className={labelStyle}>難易度:</label>
+        <select className={comboBoxStyle} onChange={(e) => onLevelSelect(Number.parseInt(e.target.value))}>
           {Object.entries(LEVELS).map(([index, { caption }]) => (
             <option value={index}>{caption}</option>
           ))}
@@ -88,10 +142,11 @@ export default function Home() {
         <div className={panelWrapperStyle}>
           <div className={panelHeaderStyle}>
             <Digits value={selectedLevel.mines} />
-            <NikoChanButton size="3x" onClick={onReset} />
-            <Digits value={timeSeconds} />
+            <NikoChanButton emotion={emotion(state)} size="3x" onClick={onReset} />
+            <Digits value={seconds} />
           </div>
           <Panel
+            key={gameId}
             width={selectedLevel.width}
             height={selectedLevel.height}
             mines={selectedLevel.mines}

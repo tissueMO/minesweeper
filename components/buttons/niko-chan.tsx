@@ -3,10 +3,11 @@
 import { css, cx } from '@/styled-system/css';
 import { button, flex } from '@/styled-system/patterns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFaceSmile } from '@fortawesome/free-solid-svg-icons';
-import { SizeProp } from '@fortawesome/fontawesome-svg-core';
+import { faFaceDizzy, faFaceLaughBeam, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import { IconProp, SizeProp } from '@fortawesome/fontawesome-svg-core';
 
 type Props = {
+  emotion: string;
   size: SizeProp;
   onClick: () => void;
 };
@@ -14,11 +15,17 @@ type Props = {
 /**
  * ニコちゃんボタン
  */
-export const NikoChanButton = ({ size, onClick = () => {} }: Props) => {
+export const NikoChanButton = ({ emotion, size, onClick = () => {} }: Props) => {
+  const EmotionIconMap: Record<string, IconProp> = {
+    smile: faFaceSmile,
+    dizzy: faFaceDizzy,
+    'laugh-beam': faFaceLaughBeam,
+  };
+
   return (
     <div className={buttonStyle} onClick={onClick}>
       <div className={buttonInnerStyle}>
-        <FontAwesomeIcon icon={faFaceSmile} size={size} className={iconStyle} />
+        <FontAwesomeIcon icon={EmotionIconMap[emotion]} size={size} className={iconStyle} />
       </div>
     </div>
   );

@@ -61,6 +61,24 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
     onStart?.();
   };
 
+  const end = (cleared: boolean) => {
+    if (cleared) {
+      // ゲームクリア
+      setCleared(true);
+
+      // this.closedTiles.forEach((tile) => that.flag([tile.row, tile.col, true]));
+      // this.clearGame();
+    } else {
+      // ゲームオーバー
+      setDead(true);
+
+      // this.gameOver();
+      // this.openMinesAndFlagsAll();
+    }
+
+    onEnd?.(cleared);
+  };
+
   const open = (tile: Tile) => {
     if (frozen || tile.opened) {
       return;
@@ -74,29 +92,18 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
     // TODO: タイルオープン
     // openRecursive(tile);
 
-    // TODO: ゲームオーバー
+    // ゲーム終了
     if (tile.hasMine) {
-      // this.gameOver();
-      // this.openMinesAndFlagsAll();
-      setCleared(true);
-      onEnd?.(false);
-      return;
-    }
-
-    // TODO: ゲームクリア
-    if (safeCountOfRemaining() === 0) {
-      // this.closedTiles.forEach((tile) => that.flag([tile.row, tile.col, true]));
-      // this.clearGame();
-      setDead(true);
-      onEnd?.(true);
-      return;
+      end(false);
+    } else if (remainingSafeTiles() === 0) {
+      end(true);
     }
   };
 
   /**
-   * 画面上にまだ見えていない地雷ではないタイルの個数
+   * 画面上にまだ見えていない地雷なしタイルの個数
    */
-  const safeCountOfRemaining = () => {
+  const remainingSafeTiles = () => {
     return tiles.reduce((sum, tiles) => {
       return (
         sum +
