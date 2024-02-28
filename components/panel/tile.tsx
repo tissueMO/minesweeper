@@ -2,12 +2,15 @@
 
 import { css, cx } from '@/styled-system/css';
 import { button } from '@/styled-system/patterns';
-import { MouseEvent, useRef, useState } from 'react';
+import { faBomb, faFlag, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { MouseEvent, useRef } from 'react';
 
 type Props = {
   number: number;
   hasMine?: boolean;
-  badFlagged?: boolean;
+  opened?: boolean;
+  flagged?: boolean;
   frozen?: boolean;
   onFlag?: () => void;
   onOpen?: () => void;
@@ -16,28 +19,33 @@ type Props = {
 /**
  * マインスイーパー盤面上のタイル
  */
-export const Tile = ({ number = 0, hasMine = false, badFlagged = false, frozen = false, onFlag, onOpen }: Props) => {
-  const [opened, setOpened] = useState(false);
-  const [flagged, setFlagged] = useState(false);
+export const Tile = ({
+  number = 0,
+  hasMine = false,
+  opened = false,
+  flagged = false,
+  frozen = false,
+  onFlag,
+  onOpen,
+}: Props) => {
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
-  const canOpen = () => {
-    return !opened && !flagged && !frozen;
-  };
+  const canOpen = () => !opened && !flagged && !frozen;
+  const canFlag = () => !opened && !frozen;
+  const badFlagged = () => opened && flagged && !hasMine;
+
   const open = () => {
     if (canOpen()) {
-      setOpened(true);
       onOpen?.();
     }
   };
   const flag = (e: MouseEvent | null) => {
-    if (!e || e.button === 2) {
-      setFlagged(true);
+    if (canFlag() && (!e || e.button === 2)) {
       onFlag?.();
     }
   };
 
-  // スマホ向けに長押しタップに対応
+  // スマホ向け: 長押しタップでフラグ切り替え
   const onTouchStart = () => {
     timer.current = setTimeout(() => {
       flag(null);
@@ -52,18 +60,56 @@ export const Tile = ({ number = 0, hasMine = false, badFlagged = false, frozen =
   };
 
   return (
-    <div className={tileStyle}>
-      <input type="checkbox" disabled={!canOpen()} checked={opened} className={checkboxStyle} />
+    <div className={[tileStyle, flagged || frozen ? 'disabled' : ''].join(' ')}>
       <label
         onClick={open}
         onMouseUp={flag}
+        onContextMenu={(e) => e.preventDefault()}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-        className={labelStyle}
-      />
-      {/* TODO: 地雷: transition要素をどうするか */}
-      {/* TODO: フラグ */}
-      {/* TODO: スカフラグ */}
+        className={[
+          labelStyle,
+          flagged ? 'flagged' : '',
+          opened ? 'opened' : '',
+          opened && !hasMine ? `number-${number}` : '',
+          opened && hasMine ? 'mine' : '',
+          badFlagged() ? 'flagged-bad' : '',
+        ].join(' ')}
+      >
+        {
+          /* 地雷 */
+          opened && hasMine ? (
+            <FontAwesomeIcon
+              icon={faBomb}
+              size="xl"
+              className={cx(tileIconStyle, mineTransition, css({ color: 'black' }))}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+          ) : null
+        }
+        {
+          /* フラグ */
+          !opened && flagged ? (
+            <FontAwesomeIcon
+              icon={faFlag}
+              size="xl"
+              className={cx(tileIconStyle, css({ color: 'red' }))}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+          ) : null
+        }
+        {
+          /* スカフラグ */
+          badFlagged() ? (
+            <FontAwesomeIcon
+              icon={faTimes}
+              size="xl"
+              className={cx(tileIconStyle, css({ color: 'red' }))}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+          ) : null
+        }
+      </label>
     </div>
   );
 };
@@ -73,52 +119,44 @@ const tileStyle = cx(
   css({
     position: 'relative',
     userSelect: 'none',
-
-    '& .fa': {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%) scale(1)',
-
-      // 地雷爆発トランジション
-      '&.transition-bomb': {
-        '&-enter-active': {
-          animation: 'bounceIn 0.5s',
-        },
-      },
-
-      // 各種アイコンの色
-      '&.fa-flag': {
-        color: 'red',
-      },
-      '&.fa-bomb': {
-        color: 'black',
-      },
-      '&.fa-times': {
-        color: 'red',
-      },
-    },
   }),
 );
 
+const tileIconStyle = css({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%) scale(1)',
+  userSelect: 'none',
+});
+
+const mineTransition = css({
+  animation: 'bounceIn 0.5s',
+});
+
 const size = 32;
+const numberColorMap: Record<number, string> = {
+  1: 'blue',
+  2: 'green',
+  3: 'red',
+  4: 'darkblue',
+  5: 'darkred',
+  6: 'darkturquoise',
+  7: 'black',
+  8: 'dimgray',
+};
 
 const numberStyleBase = {
   fontSize: `${size - 8}px`,
-  lineHeight: size,
+  lineHeight: `${size}px`,
+  fontWeight: '900',
 };
-
-const checkboxStyle = css({
-  display: 'none',
-});
 
 const labelStyle = css({
   width: `${size}px`,
   height: `${size}px`,
   display: 'block',
   textAlign: 'center',
-
-  // 右クリック抑制
   userSelect: 'none',
 
   '&.opened': {
@@ -134,61 +172,60 @@ const labelStyle = css({
       },
     },
 
-    // 開けた後に見える数字
     '&.number-1:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '1',
-        color: 'blue',
+        content: '"1"',
+        color: numberColorMap[1],
       },
     },
     '&.number-2:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '2',
-        color: 'green',
+        content: '"2"',
+        color: numberColorMap[2],
       },
     },
     '&.number-3:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '3',
-        color: 'red',
+        content: '"3"',
+        color: numberColorMap[3],
       },
     },
     '&.number-4:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '4',
-        color: 'darkblue',
+        content: '"4"',
+        color: numberColorMap[4],
       },
     },
     '&.number-5:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '5',
-        color: 'darkred',
+        content: '"5"',
+        color: numberColorMap[5],
       },
     },
     '&.number-6:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '6',
-        color: 'darkturquoise',
+        content: '"6"',
+        color: numberColorMap[6],
       },
     },
     '&.number-7:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '7',
-        color: 'black',
+        content: '"7"',
+        color: numberColorMap[7],
       },
     },
     '&.number-8:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
-        content: '8',
-        color: 'dimgray',
+        content: '"8"',
+        color: numberColorMap[8],
       },
     },
   },

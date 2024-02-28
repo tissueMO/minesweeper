@@ -3,7 +3,28 @@
 import { border3d, flex } from '@/styled-system/patterns';
 import { useEffect, useState } from 'react';
 import { Tile } from './tile';
-import { css } from '@/styled-system/css';
+import { State } from '@/types';
+import { css, cx } from '@/styled-system/css';
+
+/**
+ * 周囲8タイルを数えるためのオフセット用行列
+ */
+const OFFSET_MATRIX = [
+  [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+  ],
+  [
+    [-1, 0],
+    [1, 0],
+  ],
+  [
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+  ],
+];
 
 type Tile = {
   row: number;
@@ -21,62 +42,77 @@ type Props = {
   mines: number;
   frozen?: boolean;
   onStart?: () => void;
-  onEnd?: (cleared: boolean) => void;
+  onEnd?: (completed: boolean) => void;
 };
 
 /**
  * マインスイーパー盤面
  */
-export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}, onEnd = (cleared) => {} }: Props) => {
-  // 周囲8タイルを数えるのに使うオフセット用行列
-  const OFFSET_MATRIX = [
-    [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-    ],
-    [
-      [-1, 0],
-      [1, 0],
-    ],
-    [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-    ],
-  ];
-
-  const [started, setStarted] = useState(false);
-  const [cleared, setCleared] = useState(false);
-  const [dead, setDead] = useState(false);
+export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}, onEnd = () => {} }: Props) => {
+  const [state, setState] = useState(State.Initialized);
   const [tiles, setTiles] = useState<Tile[][]>([]);
   const [timers, setTimers] = useState<ReturnType<typeof setTimeout>[]>([]);
 
-  const start = () => {
-    // this.startGame();
-    // this.putMines(row, col);
-    // this.applyNumbers();
+  const start = (first: Tile) => {
     console.log('Panel.start');
-    setStarted(true);
+
+    // 地雷を配置
+    let counter = mines;
+    while (counter > 0) {
+      const x = Math.floor(Math.random() * width);
+      const y = Math.floor(Math.random() * height);
+
+      if (!tiles[y][x].hasMine && (first.col !== x || first.row !== y)) {
+        tiles[y][x].hasMine = true;
+        counter--;
+      }
+    }
+
+    // 全タイルの数字を決定
+    tiles.forEach((row, rowIndex) =>
+      row.forEach((tile, colIndex) => {
+        let number = 0;
+
+        OFFSET_MATRIX.forEach((r, subRowIndex) =>
+          r.forEach((c, subColIndex) => {
+            const [tx, ty] = OFFSET_MATRIX[subRowIndex][subColIndex];
+            if (
+              colIndex + tx >= 0 &&
+              width > colIndex + tx &&
+              rowIndex + ty >= 0 &&
+              height > rowIndex + ty &&
+              tiles[rowIndex + ty][colIndex + tx].hasMine
+            ) {
+              number++;
+            }
+          }),
+        );
+
+        tile.number = number;
+      }),
+    );
+
+    setState(State.Playing);
     onStart?.();
   };
 
-  const end = (cleared: boolean) => {
-    if (cleared) {
-      // ゲームクリア
-      setCleared(true);
+  const die = () => {
+    setState(State.Dead);
 
-      // this.closedTiles.forEach((tile) => that.flag([tile.row, tile.col, true]));
-      // this.clearGame();
-    } else {
-      // ゲームオーバー
-      setDead(true);
+    openMinesAndFlagsAll();
 
-      // this.gameOver();
-      // this.openMinesAndFlagsAll();
-    }
+    onEnd?.(false);
+  };
 
-    onEnd?.(cleared);
+  const complete = () => {
+    setState(State.Completed);
+
+    tiles
+      .flat()
+      .filter((t) => !t.opened)
+      .forEach((t) => flag(t, true));
+
+    onEnd?.(true);
   };
 
   const open = (tile: Tile) => {
@@ -84,20 +120,85 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
       return;
     }
 
-    // ゲームスタート
-    if (!started) {
-      start();
+    if (state === State.Initialized) {
+      start(tile);
     }
 
-    // TODO: タイルオープン
-    // openRecursive(tile);
+    openRecursive(tile);
 
-    // ゲーム終了
     if (tile.hasMine) {
-      end(false);
+      die();
     } else if (remainingSafeTiles() === 0) {
-      end(true);
+      complete();
     }
+  };
+
+  /**
+   * 指定されたタイルを開き、その周囲8タイルのうち数字が 0 であるタイルを再帰的に開きます。
+   */
+  const openRecursive = (tile: Tile) => {
+    if (tile.opened) {
+      return;
+    }
+
+    // 指定されたタイルを開く
+    tiles[tile.row][tile.col] = {
+      ...tile,
+      opened: true,
+      flagged: false,
+    };
+
+    // 再帰的に周囲のタイルを開ける
+    if (!tile.hasMine && tile.number === 0) {
+      OFFSET_MATRIX.forEach((r, subRowIndex) =>
+        r.forEach((_, subColIndex) => {
+          const [tx, ty] = OFFSET_MATRIX[subRowIndex][subColIndex];
+          if (tile.col + tx >= 0 && width > tile.col + tx && tile.row + ty >= 0 && height > tile.row + ty) {
+            openRecursive(tiles[tile.row + ty][tile.col + tx]);
+          }
+        }),
+      );
+    }
+
+    setTiles([...tiles]);
+  };
+
+  const flag = (tile: Tile, value?: boolean) => {
+    if (!frozen && !tile.opened) {
+      setTiles((tiles) => {
+        tiles[tile.row][tile.col] = {
+          ...tile,
+          flagged: value !== undefined ? value : !tile.flagged,
+        };
+        return [...tiles];
+      });
+    }
+  };
+
+  /**
+   * すべての地雷タイルとフラグが立てられたタイルを開けます。
+   */
+  const openMinesAndFlagsAll = () => {
+    // タイルの開ける順序をランダムにする
+    const targets = tiles
+      .flat()
+      .filter((t) => t.hasMine || t.flagged)
+      .toSorted(() => Math.random() - 0.5);
+
+    // 徐々にアニメーションしながらタイルを開けていく
+    targets.forEach((tile, i) => {
+      timers.push(
+        setTimeout(() => {
+          setTiles((tiles) => {
+            tiles[tile.row][tile.col] = {
+              ...tile,
+              opened: true,
+            };
+            return [...tiles];
+          });
+        }, 50 * (i + 1)),
+      );
+    });
   };
 
   /**
@@ -112,6 +213,13 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
         }, 0)
       );
     }, 0);
+  };
+
+  /**
+   * ゲームが終了したかどうかを返します。
+   */
+  const isEnd = (state: State) => {
+    return [State.Completed, State.Dead].includes(state);
   };
 
   /**
@@ -148,9 +256,17 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
   return (
     <div className={panelStyle}>
       {tiles.map((row) => (
-        <div className={flex({ direction: 'row' })}>
+        <div className={rowStyle}>
           {row.map((tile) => (
-            <Tile number={tile.number} hasMine={tile.hasMine} onOpen={() => open(tile)} />
+            <Tile
+              number={tile.number}
+              hasMine={tile.hasMine}
+              opened={tile.opened}
+              flagged={tile.flagged}
+              frozen={isEnd(state)}
+              onOpen={() => open(tile)}
+              onFlag={() => flag(tile)}
+            />
           ))}
         </div>
       ))}
@@ -165,3 +281,31 @@ const panelStyle = border3d({
   rightBottomColor: '#dfdfdf',
   backgroundColor: '#d3d3d3',
 });
+
+const rowStyle = cx(
+  flex({ direction: 'row' }),
+  css({
+    _first: {
+      '& label': {
+        borderTop: 'none',
+      },
+    },
+    _last: {
+      '& label': {
+        borderBottom: 'none',
+      },
+    },
+    '& div': {
+      _first: {
+        '& label': {
+          borderLeft: 'none',
+        },
+      },
+      _last: {
+        '& label': {
+          borderRight: 'none',
+        },
+      },
+    },
+  }),
+);

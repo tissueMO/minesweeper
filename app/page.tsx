@@ -6,6 +6,7 @@ import { Logo } from '@/components/logo';
 import { Panel } from '@/components/panel';
 import { css, cx } from '@/styled-system/css';
 import { border3d, center, flex } from '@/styled-system/patterns';
+import { State } from '@/types';
 import { useRef, useState } from 'react';
 
 type Level = {
@@ -14,13 +15,6 @@ type Level = {
   height: number;
   mines: number;
 };
-
-enum State {
-  Initialized = 'initialized',
-  Playing = 'playing',
-  Cleared = 'cleared',
-  Dead = 'dead',
-}
 
 const LEVELS: Level[] = [
   {
@@ -55,8 +49,8 @@ export default function Home() {
    */
   const onStart = () => {
     setState(State.Playing);
-
     stopTimer();
+
     setSeconds(0);
     timer.current = setInterval(() => setSeconds((s) => s + 1), 1000);
   };
@@ -64,9 +58,8 @@ export default function Home() {
   /**
    * (イベント) ゲーム終了
    */
-  const onEnd = (cleared: boolean) => {
-    setState(cleared ? State.Cleared : State.Dead);
-
+  const onEnd = (completed: boolean) => {
+    setState(completed ? State.Completed : State.Dead);
     stopTimer();
   };
 
@@ -103,6 +96,7 @@ export default function Home() {
     setSeconds(0);
 
     // 盤面リセット
+    setState(State.Initialized);
     setGameId(new Date().getTime());
   };
 
@@ -112,7 +106,7 @@ export default function Home() {
    */
   const emotion = (state: State) => {
     switch (state) {
-      case State.Cleared:
+      case State.Completed:
         return 'laugh-beam';
       case State.Dead:
         return 'dizzy';
