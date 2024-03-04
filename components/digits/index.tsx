@@ -5,14 +5,7 @@ import { Digit } from './digit';
 import { cx } from '@/styled-system/css';
 
 type Props = {
-  /**
-   * 値
-   */
   value: number;
-
-  /**
-   * 表示可能な桁数 (これを超えた値はカンスト表示になる)
-   */
   size?: number;
 };
 

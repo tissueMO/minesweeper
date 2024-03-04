@@ -3,9 +3,6 @@
 import { css, cx } from '@/styled-system/css';
 
 type Props = {
-  /**
-   * 値
-   */
   value: number;
 };
 
