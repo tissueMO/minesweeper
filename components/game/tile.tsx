@@ -12,8 +12,9 @@ type Props = {
   opened?: boolean;
   flagged?: boolean;
   frozen?: boolean;
-  onFlag?: () => void;
+  changed?: boolean;
   onOpen?: () => void;
+  onFlag?: () => void;
 };
 
 /**
@@ -25,13 +26,15 @@ export const Tile = ({
   opened = false,
   flagged = false,
   frozen = false,
-  onFlag,
+  changed = false,
   onOpen,
+  onFlag,
 }: Props) => {
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
   const canOpen = () => !opened && !flagged && !frozen;
   const canFlag = () => !opened && !frozen;
+  const canChange = () => opened && !hasMine && !changed && !frozen;
   const badFlagged = () => opened && flagged && !hasMine;
 
   const open = () => {
@@ -39,16 +42,22 @@ export const Tile = ({
       onOpen?.();
     }
   };
-  const flag = (e: MouseEvent | null) => {
-    if (canFlag() && (!e || e.button === 2)) {
+  const flag = () => {
+    if (canFlag()) {
       onFlag?.();
+    }
+  };
+
+  const onMouseUp = (e: MouseEvent) => {
+    if (e.button === 2 && !opened) {
+      flag();
     }
   };
 
   // スマホ向け: 長押しタップでフラグ切り替え
   const onTouchStart = () => {
     timer.current = setTimeout(() => {
-      flag(null);
+      flag();
       timer.current = null;
     }, 1000);
   };
@@ -63,7 +72,7 @@ export const Tile = ({
     <div className={[tileStyle, flagged || frozen ? 'disabled' : ''].join(' ')}>
       <label
         onClick={open}
-        onMouseUp={flag}
+        onMouseUp={onMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -73,7 +82,7 @@ export const Tile = ({
           opened ? 'opened' : '',
           opened && !hasMine ? `number-${number}` : '',
           opened && hasMine ? 'mine' : '',
-          badFlagged() ? 'flagged-bad' : '',
+          opened && badFlagged() ? 'flagged-bad' : '',
         ].join(' ')}
       >
         {

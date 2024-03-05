@@ -39,6 +39,7 @@ export const Game = ({}: Props) => {
   const [selectedLevel, setSelectedLevel] = useState({ ...LEVELS[0] });
   const [seconds, setSeconds] = useState(0);
   const [state, setState] = useState(State.Initialized);
+  const [retry, setRetry] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
   /**
@@ -49,6 +50,7 @@ export const Game = ({}: Props) => {
     stopTimer();
 
     setSeconds(0);
+    setRetry(0);
     timer.current = setInterval(() => setSeconds((s) => s + 1), 1000);
   };
 
@@ -61,10 +63,10 @@ export const Game = ({}: Props) => {
   };
 
   /**
-   * (イベント) ゲームリセット
+   * (イベント) ゲームシャッフル
    */
-  const onReset = () => {
-    resetGame();
+  const onShuffle = () => {
+    setRetry((prev) => prev + 1);
   };
 
   /**
@@ -91,6 +93,7 @@ export const Game = ({}: Props) => {
     // タイマー停止
     stopTimer();
     setSeconds(0);
+    setRetry(0);
 
     // 盤面リセット
     setState(State.Initialized);
@@ -99,7 +102,6 @@ export const Game = ({}: Props) => {
 
   /**
    * ゲーム状態に応じたニコちゃんボタンの表情を返します。
-   * @param state
    */
   const emotion = (state: State) => {
     switch (state) {
@@ -111,6 +113,11 @@ export const Game = ({}: Props) => {
         return 'smile';
     }
   };
+
+  /**
+   * ゲームが終了済みかどうかを返します。
+   */
+  const isEnd = () => state === State.Completed || state === State.Dead;
 
   return (
     <div className={wrapperStyle}>
@@ -127,7 +134,12 @@ export const Game = ({}: Props) => {
         <div className={panelWrapperStyle}>
           <div className={panelHeaderStyle}>
             <Digits value={selectedLevel.mines} />
-            <NikoChanButton emotion={emotion(state)} size="3x" onClick={onReset} />
+            <NikoChanButton
+              emotion={emotion(state)}
+              size="3x"
+              onClick={onShuffle}
+              className={isEnd() ? 'disabled' : ''}
+            />
             <Digits value={seconds} />
           </div>
           <Panel
@@ -135,6 +147,7 @@ export const Game = ({}: Props) => {
             width={selectedLevel.width}
             height={selectedLevel.height}
             mines={selectedLevel.mines}
+            retry={retry}
             onStart={onStart}
             onEnd={onEnd}
           />

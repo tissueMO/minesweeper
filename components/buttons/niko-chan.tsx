@@ -7,6 +7,7 @@ import { faFaceDizzy, faFaceLaughBeam, faFaceSmile } from '@fortawesome/free-sol
 import { IconProp, SizeProp } from '@fortawesome/fontawesome-svg-core';
 
 type Props = {
+  className?: string;
   emotion: string;
   size: SizeProp;
   onClick: () => void;
@@ -15,7 +16,7 @@ type Props = {
 /**
  * ニコちゃんボタン
  */
-export const NikoChanButton = ({ emotion, size, onClick = () => {} }: Props) => {
+export const NikoChanButton = ({ className, emotion, size, onClick = () => {} }: Props) => {
   const EmotionIconMap: Record<string, IconProp> = {
     smile: faFaceSmile,
     dizzy: faFaceDizzy,
@@ -23,7 +24,7 @@ export const NikoChanButton = ({ emotion, size, onClick = () => {} }: Props) => 
   };
 
   return (
-    <div className={buttonStyle} onClick={onClick}>
+    <div className={cx(buttonStyle, className)} onClick={onClick}>
       <div className={buttonInnerStyle}>
         <FontAwesomeIcon icon={EmotionIconMap[emotion]} size={size} className={iconStyle} />
       </div>

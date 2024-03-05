@@ -41,6 +41,7 @@ type Props = {
   height: number;
   mines: number;
   frozen?: boolean;
+  retry?: number;
   onStart?: () => void;
   onEnd?: (completed: boolean) => void;
 };
@@ -48,7 +49,15 @@ type Props = {
 /**
  * マインスイーパー盤面
  */
-export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}, onEnd = () => {} }: Props) => {
+export const Panel = ({
+  width,
+  height,
+  mines,
+  frozen = false,
+  retry = 0,
+  onStart = () => {},
+  onEnd = () => {},
+}: Props) => {
   const [state, setState] = useState(State.Initialized);
   const [tiles, setTiles] = useState<Tile[][]>([]);
   const [timers, setTimers] = useState<ReturnType<typeof setTimeout>[]>([]);
@@ -244,6 +253,61 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
   };
 
   /**
+   * 既に開いているタイルの数字を含めタイルの地雷配置を変更します。
+   */
+  const changeTiles = () => {
+    if (frozen) {
+      return;
+    }
+
+    // 地雷とフラグをクリア
+    tiles.forEach((row) =>
+      row.forEach((tile) => {
+        tile.hasMine = false;
+        tile.flagged = false;
+      }),
+    );
+
+    // 地雷を配置
+    let counter = mines;
+    while (counter > 0) {
+      const x = Math.floor(Math.random() * width);
+      const y = Math.floor(Math.random() * height);
+
+      if (!tiles[y][x].hasMine && !tiles[y][x].opened) {
+        tiles[y][x].hasMine = true;
+        counter--;
+      }
+    }
+
+    // 全タイルの数字を決定
+    tiles.forEach((row, rowIndex) =>
+      row.forEach((tile, colIndex) => {
+        let number = 0;
+
+        OFFSET_MATRIX.forEach((r, subRowIndex) =>
+          r.forEach((c, subColIndex) => {
+            const [tx, ty] = OFFSET_MATRIX[subRowIndex][subColIndex];
+            if (
+              colIndex + tx >= 0 &&
+              width > colIndex + tx &&
+              rowIndex + ty >= 0 &&
+              height > rowIndex + ty &&
+              tiles[rowIndex + ty][colIndex + tx].hasMine
+            ) {
+              number++;
+            }
+          }),
+        );
+
+        tile.number = number;
+      }),
+    );
+
+    setTiles([...tiles]);
+  };
+
+  /**
    * 盤面を初期化します。
    */
   useEffect(() => {
@@ -252,6 +316,16 @@ export const Panel = ({ width, height, mines, frozen = false, onStart = () => {}
     setTimers([]);
     initTiles(width, height);
   }, [width, height, mines]);
+
+  /**
+   * 現在のオープン状態を保ちながら盤面を再シャッフルします。
+   */
+  useEffect(() => {
+    if (state === State.Playing) {
+      console.log('Reshuffle Panel');
+      changeTiles();
+    }
+  }, [retry]);
 
   return (
     <div className={panelStyle}>
