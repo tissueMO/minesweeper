@@ -39,7 +39,7 @@ jobs:
 
       - name: Setup NextJS Config
         run: |
-          sed -i -e "s|// ||g" ./next.config.mjs
+          sed -i -e "s|// **DO_NOT_DELETE** ||g" ./next.config.mjs
           sed -i -e "s|##BASE_PATH##|${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}|g" ./next.config.mjs
 
       - name: Restore cache
