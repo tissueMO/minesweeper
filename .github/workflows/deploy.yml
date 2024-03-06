@@ -37,13 +37,10 @@ jobs:
           node-version: '20'
           cache: ${{ steps.define-package-manager.outputs.manager }}
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-        with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          # You may remove this line if you want to manage the configuration yourself.
-          static_site_generator: next
+      - name: Setup NextJS Config
+        run: |
+          sed -i -e "s|// ||g" ./next.config.mjs
+          sed -i -e "s|##BASE_PATH##|${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}|g" ./next.config.mjs
 
       - name: Restore cache
         uses: actions/cache@v4
@@ -63,7 +60,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./export
+          path: ./out
 
   deploy:
     name: Deploy Site
