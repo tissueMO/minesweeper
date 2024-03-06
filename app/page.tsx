@@ -7,12 +7,13 @@ import { css, cx } from '@/styled-system/css';
 import { center, flex } from '@/styled-system/patterns';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
+import { Flipped, Flipper } from 'react-flip-toolkit';
 
 export default function Home() {
   const [games, setGames] = useState<number[]>([new Date().getTime()]);
 
   const onAddGame = () => {
-    setGames([...games, new Date().getTime()]);
+    setGames([new Date().getTime(), ...games]);
   };
 
   return (
@@ -23,11 +24,15 @@ export default function Home() {
         <Logo />
       </div>
 
-      <div className={gameWrapperStyle}>
-        {games.map((g) => (
-          <Game />
-        ))}
-      </div>
+      <Flipper flipKey={games.join()}>
+        <div className={gameWrapperStyle}>
+          {games.map((g) => (
+            <Flipped flipId={g}>
+              <Game />
+            </Flipped>
+          ))}
+        </div>
+      </Flipper>
 
       <div className={addGameButtonWrapperStyle}>
         <IconButton icon={faPlus} size="3x" onClick={onAddGame} />

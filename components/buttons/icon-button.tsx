@@ -16,9 +16,11 @@ type Props = {
  */
 export const IconButton = ({ icon, size, onClick = () => {} }: Props) => {
   return (
-    <div className={buttonStyle} onClick={onClick}>
-      <FontAwesomeIcon icon={icon} size={size} className={iconStyle} />
-    </div>
+    <button className={buttonStyle} onClick={onClick}>
+      <span className={buttoninnerStyle}>
+        <FontAwesomeIcon icon={icon} size={size} className={iconStyle} />
+      </span>
+    </button>
   );
 };
 
@@ -34,9 +36,13 @@ const buttonStyle = cx(
   }),
 );
 
+const buttoninnerStyle = css({
+  position: 'relative',
+});
+
 const iconStyle = css({
   width: '3.1rem',
   height: '3.1rem',
   margin: '0',
-  color: '#333',
+  color: '#444',
 });

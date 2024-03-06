@@ -24,11 +24,11 @@ export const NikoChanButton = ({ className, emotion, size, onClick = () => {} }:
   };
 
   return (
-    <div className={cx(buttonStyle, className)} onClick={onClick}>
-      <div className={buttonInnerStyle}>
+    <button className={cx(buttonStyle, className)} onClick={onClick}>
+      <span className={buttonInnerStyle}>
         <FontAwesomeIcon icon={EmotionIconMap[emotion]} size={size} className={iconStyle} />
-      </div>
-    </div>
+      </span>
+    </button>
   );
 };
 

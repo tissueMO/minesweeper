@@ -10,7 +10,7 @@ type Props = {
 };
 
 /**
- * 7セグメントデジタル数字
+ * 7セグメントデジタル数字 (複数桁)
  */
 export const Digits = ({ value = 0, size = 3 }: Props) => {
   const limitedValue = ([...Array(size)].fill('0').join('') + Math.min(value, 10 ** size - 1)).slice(-size);

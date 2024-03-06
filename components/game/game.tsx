@@ -4,7 +4,7 @@ import { border3d, center, flex } from '@/styled-system/patterns';
 import { useRef, useState } from 'react';
 import { Level, State } from '@/types';
 import { css, cx } from '@/styled-system/css';
-import { Digits } from '../digits';
+import { Digits } from '../digits/digits';
 import { NikoChanButton } from '../buttons';
 import { Panel } from './panel';
 
@@ -115,6 +115,11 @@ export const Game = ({}: Props) => {
   };
 
   /**
+   * ゲームが開始済みかを返します。
+   */
+  const isStarted = () => state !== State.Initialized;
+
+  /**
    * ゲームが終了済みかどうかを返します。
    */
   const isEnd = () => state === State.Completed || state === State.Dead;
@@ -123,7 +128,11 @@ export const Game = ({}: Props) => {
     <div className={wrapperStyle}>
       <div className={controllersStyle}>
         <label className={labelStyle}>難易度:</label>
-        <select className={comboBoxStyle} onChange={(e) => onLevelSelect(Number.parseInt(e.target.value))}>
+        <select
+          className={comboBoxStyle}
+          onChange={(e) => onLevelSelect(Number.parseInt(e.target.value))}
+          disabled={isStarted()}
+        >
           {Object.entries(LEVELS).map(([index, { caption }]) => (
             <option value={index}>{caption}</option>
           ))}
