@@ -1,10 +1,10 @@
 'use client';
 
-import { border3d, flex } from '@/styled-system/patterns';
-import { useEffect, useState } from 'react';
 import { css, cx } from '@/styled-system/css';
-import { Tile } from './tile';
+import { border3d, flex } from '@/styled-system/patterns';
 import { State } from '@/types';
+import { useEffect, useState } from 'react';
+import { Tile } from './tile';
 
 /**
  * 周囲8タイルを数えるためのオフセット用行列
@@ -329,10 +329,11 @@ export const Panel = ({
 
   return (
     <div className={panelStyle}>
-      {tiles.map((row) => (
-        <div className={rowStyle}>
-          {row.map((tile) => (
+      {tiles.map((row, rowIndex) => (
+        <div key={rowIndex} className={rowStyle}>
+          {row.map((tile, colIndex) => (
             <Tile
+              key={colIndex}
               number={tile.number}
               hasMine={tile.hasMine}
               opened={tile.opened}

@@ -2,8 +2,8 @@
 
 import { css, cx } from '@/styled-system/css';
 import { button } from '@/styled-system/patterns';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition, SizeProp } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props = {
   icon: IconDefinition;

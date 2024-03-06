@@ -10,6 +10,7 @@ export default defineConfig({
   theme: {
     extend: {
       keyframes: {
+        // 地雷出現アニメーション
         bounceIn: {
           '0%': {
             transform: 'translate(-50%, -50%) scale(0)',

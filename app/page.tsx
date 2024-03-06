@@ -25,18 +25,20 @@ export default function Home() {
       </div>
 
       <Flipper flipKey={games.join()}>
+        <div className={addGameButtonWrapperStyle}>
+          <IconButton icon={faPlus} size="3x" onClick={onAddGame} />
+        </div>
+
         <div className={gameWrapperStyle}>
           {games.map((g) => (
-            <Flipped flipId={g}>
-              <Game />
+            <Flipped key={g} flipId={g}>
+              <div>
+                <Game />
+              </div>
             </Flipped>
           ))}
         </div>
       </Flipper>
-
-      <div className={addGameButtonWrapperStyle}>
-        <IconButton icon={faPlus} size="3x" onClick={onAddGame} />
-      </div>
     </main>
   );
 }
@@ -56,6 +58,6 @@ const gameWrapperStyle = flex({ wrap: 'wrap', justifyContent: 'center' });
 const addGameButtonWrapperStyle = cx(
   center(),
   css({
-    marginBottom: '3rem',
+    margin: '1rem',
   }),
 );

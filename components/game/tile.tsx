@@ -34,7 +34,6 @@ export const Tile = ({
 
   const canOpen = () => !opened && !flagged && !frozen;
   const canFlag = () => !opened && !frozen;
-  const canChange = () => opened && !hasMine && !changed && !frozen;
   const badFlagged = () => opened && flagged && !hasMine;
 
   const open = () => {

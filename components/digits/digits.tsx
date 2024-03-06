@@ -1,8 +1,8 @@
 'use client';
 
+import { cx } from '@/styled-system/css';
 import { border3d, flex } from '@/styled-system/patterns';
 import { Digit } from './digit';
-import { cx } from '@/styled-system/css';
 
 type Props = {
   value: number;
@@ -28,8 +28,8 @@ export const Digits = ({ value = 0, size = 3 }: Props) => {
         }),
       )}
     >
-      {digits.map((d) => {
-        return <Digit value={d} />;
+      {digits.map((d, i) => {
+        return <Digit key={i} value={d} />;
       })}
     </div>
   );

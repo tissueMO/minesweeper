@@ -1,11 +1,11 @@
 'use client';
 
-import { border3d, center, flex } from '@/styled-system/patterns';
-import { useRef, useState } from 'react';
-import { Level, State } from '@/types';
 import { css, cx } from '@/styled-system/css';
-import { Digits } from '../digits/digits';
+import { border3d, center, flex } from '@/styled-system/patterns';
+import { Level, State } from '@/types';
+import { useRef, useState } from 'react';
 import { NikoChanButton } from '../buttons';
+import { Digits } from '../digits/digits';
 import { Panel } from './panel';
 
 const LEVELS: Level[] = [
@@ -128,15 +128,19 @@ export const Game = ({}: Props) => {
     <div className={wrapperStyle}>
       <div className={controllersStyle}>
         <label className={labelStyle}>難易度:</label>
-        <select
-          className={comboBoxStyle}
-          onChange={(e) => onLevelSelect(Number.parseInt(e.target.value))}
-          disabled={isStarted()}
-        >
-          {Object.entries(LEVELS).map(([index, { caption }]) => (
-            <option value={index}>{caption}</option>
-          ))}
-        </select>
+        {!isStarted() ? (
+          // 開始前までは変更可
+          <select className={comboBoxStyle} onChange={(e) => onLevelSelect(Number.parseInt(e.target.value))}>
+            {Object.entries(LEVELS).map(([index, { caption }]) => (
+              <option key={index} value={index}>
+                {caption}
+              </option>
+            ))}
+          </select>
+        ) : (
+          // 開始後は変更不可
+          <span>{selectedLevel.caption}</span>
+        )}
       </div>
 
       <div className={center()}>
@@ -177,7 +181,7 @@ const comboBoxStyle = css({
   borderColor: 'rgb(118, 118, 118)',
 });
 
-const controllersStyle = cx(center(), css({ marginBottom: '2rem' }), flex({ align: 'center' }));
+const controllersStyle = cx(center(), css({ marginBottom: '1rem' }), flex({ align: 'center' }));
 
 const panelWrapperStyle = cx(
   flex({ direction: 'column', justifyContent: 'center' }),

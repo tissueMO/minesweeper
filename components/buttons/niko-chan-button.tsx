@@ -2,9 +2,9 @@
 
 import { css, cx } from '@/styled-system/css';
 import { button, flex } from '@/styled-system/patterns';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFaceDizzy, faFaceLaughBeam, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
 import { IconProp, SizeProp } from '@fortawesome/fontawesome-svg-core';
+import { faFaceDizzy, faFaceLaughBeam, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props = {
   className?: string;
