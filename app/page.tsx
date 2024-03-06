@@ -6,15 +6,20 @@ import { Logo } from '@/components/logo';
 import { css, cx } from '@/styled-system/css';
 import { center, flex } from '@/styled-system/patterns';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Flipped, Flipper } from 'react-flip-toolkit';
 
 export default function Home() {
-  const [games, setGames] = useState<number[]>([new Date().getTime()]);
+  const [games, setGames] = useState<number[]>([]);
 
-  const onAddGame = () => {
+  const newGame = () => {
     setGames([new Date().getTime(), ...games]);
   };
+
+  // 最初のゲームを開始
+  useEffect(() => {
+    newGame();
+  }, []);
 
   return (
     <main className={mainStyle}>
@@ -26,7 +31,7 @@ export default function Home() {
 
       <Flipper flipKey={games.join()}>
         <div className={addGameButtonWrapperStyle}>
-          <IconButton icon={faPlus} size="3x" onClick={onAddGame} />
+          <IconButton icon={faPlus} size="3x" onClick={newGame} />
         </div>
 
         <div className={gameWrapperStyle}>
