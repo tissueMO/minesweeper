@@ -12,7 +12,6 @@ type Props = {
   opened?: boolean;
   flagged?: boolean;
   frozen?: boolean;
-  changed?: boolean;
   onOpen?: () => void;
   onFlag?: () => void;
 };
@@ -26,7 +25,6 @@ export const Tile = ({
   opened = false,
   flagged = false,
   frozen = false,
-  changed = false,
   onOpen,
   onFlag,
 }: Props) => {
