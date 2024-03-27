@@ -12,14 +12,15 @@ import { Flipped, Flipper } from 'react-flip-toolkit';
 export default function Home() {
   const [games, setGames] = useState<number[]>([]);
 
-  const newGame = () => {
-    setGames([new Date().getTime(), ...games]);
-  };
-
-  // 最初のゲームを開始
+  // (初回のみ)ゲーム開始
   useEffect(() => {
     newGame();
   }, []);
+
+  // 新規ゲーム開始
+  const newGame = () => {
+    setGames([new Date().getTime(), ...games]);
+  };
 
   return (
     <main className={mainStyle}>

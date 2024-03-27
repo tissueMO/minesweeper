@@ -3,7 +3,7 @@
 import { css, cx } from '@/styled-system/css';
 import { border3d, flex } from '@/styled-system/patterns';
 import { State } from '@/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Tile } from './tile';
 
 /**
@@ -60,7 +60,23 @@ export const Panel = ({
 }: Props) => {
   const [state, setState] = useState(State.Initialized);
   const [tiles, setTiles] = useState<Tile[][]>([]);
-  const [timers, setTimers] = useState<ReturnType<typeof setTimeout>[]>([]);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // 盤面を初期化
+  useEffect(() => {
+    console.log('Refresh Panel:', { width, height });
+    timers.current.forEach((timer) => clearTimeout(timer));
+    timers.current = [];
+    initTiles(width, height);
+  }, [width, height, mines]);
+
+  // 現在のオープン状態を保ちながら盤面を再シャッフル
+  useEffect(() => {
+    if (state === State.Playing) {
+      console.log('Reshuffle Panel');
+      changeTiles();
+    }
+  }, [retry]);
 
   const start = (first: Tile) => {
     console.log('Panel.start');
@@ -196,7 +212,7 @@ export const Panel = ({
 
     // 徐々にアニメーションしながらタイルを開けていく
     targets.forEach((tile, i) => {
-      timers.push(
+      timers.current.push(
         setTimeout(() => {
           setTiles((tiles) => {
             tiles[tile.row][tile.col] = {
@@ -306,26 +322,6 @@ export const Panel = ({
 
     setTiles([...tiles]);
   };
-
-  /**
-   * 盤面を初期化します。
-   */
-  useEffect(() => {
-    console.log('Refresh Panel:', { width, height });
-    timers.forEach((timer) => clearTimeout(timer));
-    setTimers([]);
-    initTiles(width, height);
-  }, [width, height, mines]);
-
-  /**
-   * 現在のオープン状態を保ちながら盤面を再シャッフルします。
-   */
-  useEffect(() => {
-    if (state === State.Playing) {
-      console.log('Reshuffle Panel');
-      changeTiles();
-    }
-  }, [retry]);
 
   return (
     <div className={panelStyle}>
