@@ -39,11 +39,11 @@ export function Tiles({
 
   return (
     <div className={panelStyle}>
-      {rows.map((row, rowIndex) => (
-        <div key={rowIndex} className={rowStyle}>
-          {row.map((tile, colIndex) => (
+      {rows.map((row, y) => (
+        <div key={y} className={rowStyle}>
+          {row.map((tile, x) => (
             <Tile
-              key={colIndex}
+              key={x}
               number={tile.number}
               hasMine={tile.hasMine}
               opened={tile.opened}

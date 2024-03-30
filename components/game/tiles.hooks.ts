@@ -10,33 +10,15 @@ type Props = {
   onEnd?: (completed: boolean) => void;
 };
 
-export type Tile = {
-  col: number;
-  row: number;
+type Tile = {
+  x: Readonly<number>;
+  y: Readonly<number>;
   flagged: boolean;
   badFlagged: boolean;
   opened: boolean;
   number: number;
   hasMine: boolean;
 };
-
-// 周囲8タイルを数えるためのオフセット用行列
-const OFFSET_MATRIX = [
-  [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-  ],
-  [
-    [-1, 0],
-    [1, 0],
-  ],
-  [
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-  ],
-];
 
 /**
  * マインスイーパー
@@ -57,9 +39,7 @@ export function useMinesweeper({
 
   const isStarted = state !== State.Initialized;
   const isEnded = [State.Completed, State.Dead].includes(state);
-
-  // 画面上にまだ見えていない地雷のないタイルの個数
-  const remainingSafeTiles = tiles.reduce((sum, tile) => sum + (!tile.opened && !tile.hasMine ? 1 : 0), 0);
+  const remainingSafeTiles = tiles.filter((t) => !t.opened && !t.hasMine).length;
 
   // 盤面を初期化
   useEffect(() => {
@@ -75,8 +55,8 @@ export function useMinesweeper({
   const init = (width: number, height: number) => {
     setTiles(
       [...Array(width * height)].map((_, i) => ({
-        col: i % width,
-        row: Math.floor(i / width),
+        x: convertXY(i)[0],
+        y: convertXY(i)[1],
         flagged: false,
         badFlagged: false,
         opened: false,
@@ -88,8 +68,11 @@ export function useMinesweeper({
 
   // 最初のタイルをオープン
   const start = (first: Tile) => {
-    shuffle(first);
     setState(State.Playing);
+
+    // 最初のタイルが地雷とならないようにシャッフルする
+    shuffle(first);
+
     onStart?.();
   };
 
@@ -105,7 +88,7 @@ export function useMinesweeper({
         timers.current.push(
           setTimeout(() => {
             setTiles((tiles) => {
-              tile(t.col, t.row, tiles).opened = true;
+              tile(t.x, t.y, tiles).opened = true;
               return [...tiles];
             });
           }, 50 * (i + 1)),
@@ -151,15 +134,7 @@ export function useMinesweeper({
 
       // 再帰的に周囲のタイルを開く
       if (!t.hasMine && t.number === 0) {
-        // TODO: わかりにくいのでなんとかしたい、やりたいのは要するに8方向を見ることだけ
-        OFFSET_MATRIX.forEach((r, subRowIndex) =>
-          r.forEach((_, subColIndex) => {
-            const [tx, ty] = OFFSET_MATRIX[subRowIndex][subColIndex];
-            if (t.col + tx >= 0 && width > t.col + tx && t.row + ty >= 0 && height > t.row + ty) {
-              openRecursive(tile(t.col + tx, t.row + ty));
-            }
-          }),
-        );
+        aroundTiles(t).forEach((arroundTile) => openRecursive(arroundTile));
       }
 
       setTiles([...tiles]);
@@ -177,51 +152,51 @@ export function useMinesweeper({
   // 既に開いているタイルの数字を含めタイルの地雷配置を変更
   const shuffle = (first?: Tile) => {
     if (first || isStarted) {
-      // 地雷とフラグをクリア
       tiles.forEach((t) => {
         t.hasMine = false;
         t.flagged = false;
       });
 
       // 地雷を配置
-      // TODO: 無駄なループなので効率化したい
       let count = mines;
       while (count > 0) {
-        const x = Math.floor(Math.random() * width);
-        const y = Math.floor(Math.random() * height);
+        const [x, y] = convertXY(Math.floor(Math.random() * width * height));
 
-        if (!tile(x, y).hasMine && !tile(x, y).opened && (!first || first.col !== x || first.row !== y)) {
+        if (!tile(x, y).hasMine && !tile(x, y).opened && (!first || first.x !== x || first.y !== y)) {
           tile(x, y).hasMine = true;
           count--;
         }
       }
 
-      // 全タイルの数字を決定
+      // すべてのタイルに数字を埋め込む
       tiles.forEach((t) => {
-        let number = 0;
-
-        // TODO: わかりにくいのでなんとかしたい、やりたいのは要するに8方向を見ることだけ
-        OFFSET_MATRIX.forEach((r, subRowIndex) =>
-          r.forEach((c, subColIndex) => {
-            const [tx, ty] = OFFSET_MATRIX[subRowIndex][subColIndex];
-            if (
-              t.col + tx >= 0 &&
-              width > t.col + tx &&
-              t.row + ty >= 0 &&
-              height > t.row + ty &&
-              tile(t.col + tx, t.row + ty).hasMine
-            ) {
-              number++;
-            }
-          }),
-        );
-
-        t.number = number;
+        t.number = aroundTiles(t).filter((arroundTile) => arroundTile.hasMine).length;
       });
 
       setTiles([...tiles]);
     }
   };
+
+  // 周囲のタイルを取得
+  const aroundTiles = (t: Tile) => {
+    const OFFSETS = [
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [-1, 0],
+      [1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+    ];
+
+    return OFFSETS.map(([offsetX, offsetY]) => [t.x + offsetX, t.y + offsetY])
+      .filter(([x, y]) => 0 <= x && x < width && 0 <= y && y < height)
+      .map(([x, y]) => tile(x, y, tiles));
+  };
+
+  // 二次元座標に変換
+  const convertXY = (i: number) => [i % width, Math.floor(i / width)] as const;
 
   const minesweeper = {
     tiles,
