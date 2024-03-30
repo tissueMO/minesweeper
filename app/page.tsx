@@ -9,6 +9,9 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { Flipped, Flipper } from 'react-flip-toolkit';
 
+/**
+ * トップページ
+ */
 export default function Home() {
   const [games, setGames] = useState<number[]>([]);
 
@@ -50,17 +53,13 @@ export default function Home() {
 }
 
 const mainStyle = flex({ direction: 'column' });
-
 const titleStyle = css({ margin: '0 0.1rem', fontWeight: '900' });
-
 const headerStyle = cx(
   center(),
   flex({ align: 'center' }),
   css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' }),
 );
-
 const gameWrapperStyle = flex({ wrap: 'wrap', justifyContent: 'center' });
-
 const addGameButtonWrapperStyle = cx(
   center(),
   css({

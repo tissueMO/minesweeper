@@ -2,7 +2,7 @@
 
 import { css, cx } from '@/styled-system/css';
 import { button, flex } from '@/styled-system/patterns';
-import { IconProp, SizeProp } from '@fortawesome/fontawesome-svg-core';
+import { SizeProp } from '@fortawesome/fontawesome-svg-core';
 import { faFaceDizzy, faFaceLaughBeam, faFaceSmile } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -16,21 +16,21 @@ type Props = {
 /**
  * ニコちゃんボタン
  */
-export const NikoChanButton = ({ className, emotion, size, onClick = () => {} }: Props) => {
-  const EmotionIconMap: Record<string, IconProp> = {
-    smile: faFaceSmile,
-    dizzy: faFaceDizzy,
-    'laugh-beam': faFaceLaughBeam,
-  };
+export function NikoChanButton({ className, emotion, size, onClick = () => {} }: Readonly<Props>) {
+  const icon =
+    {
+      dizzy: faFaceDizzy,
+      'laugh-beam': faFaceLaughBeam,
+    }[emotion] ?? faFaceSmile;
 
   return (
     <button className={cx(buttonStyle, className)} onClick={onClick}>
       <span className={buttonInnerStyle}>
-        <FontAwesomeIcon icon={EmotionIconMap[emotion]} size={size} className={iconStyle} />
+        <FontAwesomeIcon icon={icon} size={size} className={iconStyle} />
       </span>
     </button>
   );
-};
+}
 
 const buttonStyle = cx(
   button(),
@@ -41,7 +41,6 @@ const buttonStyle = cx(
     margin: '0 0.5rem',
   }),
 );
-
 const buttonInnerStyle = cx(
   flex({ justifyContent: 'center', alignItems: 'center' }),
   css({
@@ -53,7 +52,6 @@ const buttonInnerStyle = cx(
     bgColor: '#000',
   }),
 );
-
 const iconStyle = css({
   width: '2.9rem',
   height: '2.9rem',

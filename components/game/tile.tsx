@@ -19,7 +19,7 @@ type Props = {
 /**
  * マインスイーパー盤面上のタイル
  */
-export const Tile = ({
+export function Tile({
   number = 0,
   hasMine = false,
   opened = false,
@@ -27,31 +27,32 @@ export const Tile = ({
   frozen = false,
   onOpen,
   onFlag,
-}: Props) => {
+}: Readonly<Props>) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
-  const canOpen = () => !opened && !flagged && !frozen;
-  const canFlag = () => !opened && !frozen;
-  const badFlagged = () => opened && flagged && !hasMine;
+  const canOpen = !opened && !flagged && !frozen;
+  const canFlag = !opened && !frozen;
+  const badFlagged = opened && flagged && !hasMine;
 
   const open = () => {
-    if (canOpen()) {
+    if (canOpen) {
       onOpen?.();
     }
   };
   const flag = () => {
-    if (canFlag()) {
+    if (canFlag) {
       onFlag?.();
     }
   };
 
+  // PC向け: 右クリックでフラグ切替
   const onMouseUp = (e: MouseEvent) => {
     if (e.button === 2 && !opened) {
       flag();
     }
   };
 
-  // スマホ向け: 長押しタップでフラグ切り替え
+  // スマホ向け: 長押しタップでフラグ切替
   const onTouchStart = () => {
     timer.current = setTimeout(() => {
       flag();
@@ -65,60 +66,64 @@ export const Tile = ({
     }
   };
 
+  // 数字以外のアイコン
+  let icon = null;
+  if (opened && hasMine) {
+    // 地雷
+    icon = (
+      <FontAwesomeIcon
+        icon={faBomb}
+        size="xl"
+        className={cx(tileIconStyle, mineTransition, css({ color: 'black' }))}
+        onContextMenu={(e) => e.preventDefault()}
+      />
+    );
+  } else if (!opened && flagged) {
+    // フラグ
+    icon = (
+      <FontAwesomeIcon
+        icon={faFlag}
+        size="xl"
+        className={cx(tileIconStyle, css({ color: 'red' }))}
+        onContextMenu={(e) => e.preventDefault()}
+      />
+    );
+  } else if (badFlagged) {
+    // スカフラグ
+    icon = (
+      <FontAwesomeIcon
+        icon={faTimes}
+        size="xl"
+        className={cx(tileIconStyle, css({ color: 'red' }))}
+        onContextMenu={(e) => e.preventDefault()}
+      />
+    );
+  }
+
   return (
     <div className={[tileStyle, flagged || frozen ? 'disabled' : ''].join(' ')}>
       <label
         onClick={open}
         onMouseUp={onMouseUp}
-        onContextMenu={(e) => e.preventDefault()}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
+        onContextMenu={(e) => e.preventDefault()}
         className={[
           labelStyle,
           flagged ? 'flagged' : '',
           opened ? 'opened' : '',
           opened && !hasMine ? `number-${number}` : '',
           opened && hasMine ? 'mine' : '',
-          opened && badFlagged() ? 'flagged-bad' : '',
+          badFlagged ? 'flagged-bad' : '',
         ].join(' ')}
       >
-        {
-          /* 地雷 */
-          opened && hasMine ? (
-            <FontAwesomeIcon
-              icon={faBomb}
-              size="xl"
-              className={cx(tileIconStyle, mineTransition, css({ color: 'black' }))}
-              onContextMenu={(e) => e.preventDefault()}
-            />
-          ) : null
-        }
-        {
-          /* フラグ */
-          !opened && flagged ? (
-            <FontAwesomeIcon
-              icon={faFlag}
-              size="xl"
-              className={cx(tileIconStyle, css({ color: 'red' }))}
-              onContextMenu={(e) => e.preventDefault()}
-            />
-          ) : null
-        }
-        {
-          /* スカフラグ */
-          badFlagged() ? (
-            <FontAwesomeIcon
-              icon={faTimes}
-              size="xl"
-              className={cx(tileIconStyle, css({ color: 'red' }))}
-              onContextMenu={(e) => e.preventDefault()}
-            />
-          ) : null
-        }
+        {icon}
       </label>
     </div>
   );
-};
+}
+
+const BASE_SIZE = 32;
 
 const tileStyle = cx(
   button(),
@@ -127,7 +132,6 @@ const tileStyle = cx(
     userSelect: 'none',
   }),
 );
-
 const tileIconStyle = css({
   position: 'absolute',
   top: '50%',
@@ -135,32 +139,17 @@ const tileIconStyle = css({
   transform: 'translate(-50%, -50%) scale(1)',
   userSelect: 'none',
 });
-
 const mineTransition = css({
   animation: 'bounceIn 0.5s',
 });
-
-const size = 32;
-const numberColorMap: Record<number, string> = {
-  1: 'blue',
-  2: 'green',
-  3: 'red',
-  4: 'darkblue',
-  5: 'darkred',
-  6: 'darkturquoise',
-  7: 'black',
-  8: 'dimgray',
-};
-
 const numberStyleBase = {
-  fontSize: `${size - 8}px`,
-  lineHeight: `${size}px`,
+  fontSize: `${BASE_SIZE - 8}px`,
+  lineHeight: `${BASE_SIZE}px`,
   fontWeight: '900',
 };
-
 const labelStyle = css({
-  width: `${size}px`,
-  height: `${size}px`,
+  width: `${BASE_SIZE}px`,
+  height: `${BASE_SIZE}px`,
   display: 'block',
   textAlign: 'center',
   userSelect: 'none',
@@ -182,56 +171,56 @@ const labelStyle = css({
       _after: {
         ...numberStyleBase,
         content: '"1"',
-        color: numberColorMap[1],
+        color: 'blue',
       },
     },
     '&.number-2:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"2"',
-        color: numberColorMap[2],
+        color: 'green',
       },
     },
     '&.number-3:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"3"',
-        color: numberColorMap[3],
+        color: 'red',
       },
     },
     '&.number-4:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"4"',
-        color: numberColorMap[4],
+        color: 'darkblue',
       },
     },
     '&.number-5:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"5"',
-        color: numberColorMap[5],
+        color: 'darkred',
       },
     },
     '&.number-6:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"6"',
-        color: numberColorMap[6],
+        color: 'darkturquoise',
       },
     },
     '&.number-7:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"7"',
-        color: numberColorMap[7],
+        color: 'black',
       },
     },
     '&.number-8:not(.flagged-bad)': {
       _after: {
         ...numberStyleBase,
         content: '"8"',
-        color: numberColorMap[8],
+        color: 'dimgray',
       },
     },
   },

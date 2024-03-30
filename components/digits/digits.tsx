@@ -12,9 +12,11 @@ type Props = {
 /**
  * 7セグメントデジタル数字 (複数桁)
  */
-export const Digits = ({ value = 0, size = 3 }: Props) => {
-  const limitedValue = ([...Array(size)].fill('0').join('') + Math.min(value, 10 ** size - 1)).slice(-size);
-  const digits = [...`${limitedValue}`].slice(0, size).map((v) => Number.parseInt(v));
+export function Digits({ value = 0, size = 3 }: Readonly<Props>) {
+  // 桁数を最大幅に揃えて分離する
+  const limitedValue = Math.max(0, Math.min(value, 10 ** size - 1));
+  const paddingValue = limitedValue.toString().padStart(size, '0');
+  const digits = [...paddingValue].map((v) => Number.parseInt(v));
 
   return (
     <div
@@ -33,4 +35,4 @@ export const Digits = ({ value = 0, size = 3 }: Props) => {
       })}
     </div>
   );
-};
+}

@@ -9,7 +9,7 @@ const BASE_PATH = config.basePath ?? '';
 /**
  * ロゴ
  */
-export const Logo = () => {
+export function Logo() {
   return (
     <Image
       src={`${BASE_PATH}/logo.svg`}
@@ -17,13 +17,11 @@ export const Logo = () => {
       width={180}
       height={37}
       priority
-      className={logoStyle}
+      className={css({
+        width: '5rem',
+        height: '5rem',
+        margin: '0',
+      })}
     />
   );
-};
-
-const logoStyle = css({
-  width: '5rem',
-  height: '5rem',
-  margin: '0',
-});
+}

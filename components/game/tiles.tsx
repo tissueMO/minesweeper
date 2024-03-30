@@ -6,9 +6,27 @@ import { State } from '@/types';
 import { useEffect, useRef, useState } from 'react';
 import { Tile } from './tile';
 
-/**
- * 周囲8タイルを数えるためのオフセット用行列
- */
+type Props = {
+  width: number;
+  height: number;
+  mines: number;
+  frozen?: boolean;
+  retry?: number;
+  onStart?: () => void;
+  onEnd?: (completed: boolean) => void;
+};
+
+type Tile = {
+  row: number;
+  col: number;
+  flagged: boolean;
+  badFlagged: boolean;
+  opened: boolean;
+  number: number;
+  hasMine: boolean;
+};
+
+// 周囲8タイルを数えるためのオフセット用行列
 const OFFSET_MATRIX = [
   [
     [-1, -1],
@@ -26,30 +44,10 @@ const OFFSET_MATRIX = [
   ],
 ];
 
-type Tile = {
-  row: number;
-  col: number;
-  flagged: boolean;
-  badFlagged: boolean;
-  opened: boolean;
-  number: number;
-  hasMine: boolean;
-};
-
-type Props = {
-  width: number;
-  height: number;
-  mines: number;
-  frozen?: boolean;
-  retry?: number;
-  onStart?: () => void;
-  onEnd?: (completed: boolean) => void;
-};
-
 /**
  * マインスイーパー盤面
  */
-export const Panel = ({
+export function Tiles({
   width,
   height,
   mines,
@@ -57,14 +55,13 @@ export const Panel = ({
   retry = 0,
   onStart = () => {},
   onEnd = () => {},
-}: Props) => {
+}: Readonly<Props>) {
   const [state, setState] = useState(State.Initialized);
   const [tiles, setTiles] = useState<Tile[][]>([]);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // 盤面を初期化
   useEffect(() => {
-    console.log('Refresh Panel:', { width, height });
     timers.current.forEach((timer) => clearTimeout(timer));
     timers.current = [];
     initTiles(width, height);
@@ -73,14 +70,12 @@ export const Panel = ({
   // 現在のオープン状態を保ちながら盤面を再シャッフル
   useEffect(() => {
     if (state === State.Playing) {
-      console.log('Reshuffle Panel');
       changeTiles();
     }
   }, [retry]);
 
+  // TODO: 関数コメント
   const start = (first: Tile) => {
-    console.log('Panel.start');
-
     // 地雷を配置
     let counter = mines;
     while (counter > 0) {
@@ -121,6 +116,7 @@ export const Panel = ({
     onStart?.();
   };
 
+  // TODO: 関数コメント
   const die = () => {
     setState(State.Dead);
 
@@ -129,6 +125,7 @@ export const Panel = ({
     onEnd?.(false);
   };
 
+  // TODO: 関数コメント
   const complete = () => {
     setState(State.Completed);
 
@@ -140,6 +137,7 @@ export const Panel = ({
     onEnd?.(true);
   };
 
+  // TODO: 関数コメント
   const open = (tile: Tile) => {
     if (frozen || tile.opened) {
       return;
@@ -158,9 +156,7 @@ export const Panel = ({
     }
   };
 
-  /**
-   * 指定されたタイルを開き、その周囲8タイルのうち数字が 0 であるタイルを再帰的に開きます。
-   */
+  // 指定されたタイルを再帰的に開く
   const openRecursive = (tile: Tile) => {
     if (tile.opened) {
       return;
@@ -188,6 +184,7 @@ export const Panel = ({
     setTiles([...tiles]);
   };
 
+  // TODO: 関数コメント
   const flag = (tile: Tile, value?: boolean) => {
     if (!frozen && !tile.opened) {
       setTiles((tiles) => {
@@ -200,9 +197,7 @@ export const Panel = ({
     }
   };
 
-  /**
-   * すべての地雷タイルとフラグが立てられたタイルを開けます。
-   */
+  // すべての地雷タイルとフラグが立てられたタイルを開ける
   const openMinesAndFlagsAll = () => {
     // タイルの開ける順序をランダムにする
     const targets = tiles
@@ -226,9 +221,7 @@ export const Panel = ({
     });
   };
 
-  /**
-   * 画面上にまだ見えていない地雷なしタイルの個数
-   */
+  // 画面上にまだ見えていない地雷なしタイルの個数
   const remainingSafeTiles = () => {
     return tiles.reduce((sum, tiles) => {
       return (
@@ -240,18 +233,12 @@ export const Panel = ({
     }, 0);
   };
 
-  /**
-   * ゲームが終了したかどうかを返します。
-   */
+  // ゲームが終了したかどうか
   const isEnd = (state: State) => {
     return [State.Completed, State.Dead].includes(state);
   };
 
-  /**
-   * 空の盤面を生成します。
-   * @param width
-   * @param height
-   */
+  // 空の盤面を生成
   const initTiles = (width: number, height: number) => {
     setTiles(
       [...Array(height)].map((_, rowIndex) =>
@@ -268,9 +255,7 @@ export const Panel = ({
     );
   };
 
-  /**
-   * 既に開いているタイルの数字を含めタイルの地雷配置を変更します。
-   */
+  // 既に開いているタイルの数字を含めタイルの地雷配置を変更
   const changeTiles = () => {
     if (frozen) {
       return;
@@ -344,7 +329,7 @@ export const Panel = ({
       <div className={flex({ direction: 'column' })}></div>
     </div>
   );
-};
+}
 
 const panelStyle = border3d({
   borderWidth: '5px',
@@ -352,7 +337,6 @@ const panelStyle = border3d({
   rightBottomColor: '#dfdfdf',
   backgroundColor: '#d3d3d3',
 });
-
 const rowStyle = cx(
   flex({ direction: 'row' }),
   css({

@@ -9,22 +9,18 @@ type Props = {
 /**
  * 7セグメントデジタル数字 (1桁)
  */
-export const Digit = ({ value = 0 }: Props) => {
-  return (
-    <div>
-      <div className={cx(displayStyle, digitStyles[value])}></div>
-    </div>
-  );
+export const Digit = ({ value = 0 }: Readonly<Props>) => {
+  return <div className={cx(displayStyle, digitStyles[value])}></div>;
 };
 
-const size = 0.5;
-const color = '#f00';
-const backColor = '#511';
+const SIZE_RATE = 0.5;
+const FOREGROUND_COLOR = '#f00';
+const BACKGROUND_COLOR = '#511';
 
 const displayStyle = css({
-  width: `${60 * size}px`,
-  height: `${100 * size}px`,
-  border: `solid ${4 * size}px #111`,
+  width: `${60 * SIZE_RATE}px`,
+  height: `${100 * SIZE_RATE}px`,
+  border: `solid ${4 * SIZE_RATE}px #111`,
   bgColor: '#111',
   boxSizing: 'border-box',
   position: 'relative',
@@ -35,152 +31,150 @@ const displayStyle = css({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    width: `${28 * size}px`,
-    height: `${28 * size}px`,
+    width: `${28 * SIZE_RATE}px`,
+    height: `${28 * SIZE_RATE}px`,
     transform: 'translate(-50%, -50%) rotate(45deg)',
   },
-
   _after: {
     content: '""',
     position: 'absolute',
     top: '50%',
     left: '50%',
-    width: `${30 * size}px`,
-    height: `${72 * size}px`,
-    borderTop: `solid ${30 * size}px #111`,
-    borderBottom: `solid ${30 * size}px #111`,
+    width: `${30 * SIZE_RATE}px`,
+    height: `${72 * SIZE_RATE}px`,
+    borderTop: `solid ${30 * SIZE_RATE}px #111`,
+    borderBottom: `solid ${30 * SIZE_RATE}px #111`,
     transform: 'translate(-50%, -50%)',
   },
 });
-
 const digitStyles: Record<number, string> = {
   0: css({
     _before: {
-      bgColor: backColor,
+      bgColor: BACKGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${color}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   1: css({
     _before: {
-      bgColor: backColor,
+      bgColor: BACKGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${backColor}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${backColor}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${backColor}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
       ].join(','),
     },
   }),
   2: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${backColor}`,
-        `${0 * size}px ${30 * size}px ${color}`,
-        `${30 * size}px ${0 * size}px ${backColor}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   3: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${backColor}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   4: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${backColor}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${backColor}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
       ].join(','),
     },
   }),
   5: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${backColor}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   6: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${backColor}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${color}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   7: css({
     _before: {
-      bgColor: backColor,
+      bgColor: BACKGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${backColor}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
       ].join(','),
     },
   }),
   8: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${color}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),
   9: css({
     _before: {
-      bgColor: color,
+      bgColor: FOREGROUND_COLOR,
       boxShadow: [
-        `${-30 * size}px ${-30 * size}px ${color}`,
-        `${0 * size}px ${-30 * size}px ${color}`,
-        `${-30 * size}px ${0 * size}px ${color}`,
-        `${0 * size}px ${30 * size}px ${backColor}`,
-        `${30 * size}px ${0 * size}px ${color}`,
-        `${30 * size}px ${30 * size}px ${color}`,
+        `${-30 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${-30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${-30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${0 * SIZE_RATE}px ${30 * SIZE_RATE}px ${BACKGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${0 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
+        `${30 * SIZE_RATE}px ${30 * SIZE_RATE}px ${FOREGROUND_COLOR}`,
       ].join(','),
     },
   }),

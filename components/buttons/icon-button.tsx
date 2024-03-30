@@ -14,7 +14,7 @@ type Props = {
 /**
  * アイコンボタン
  */
-export const IconButton = ({ icon, size, onClick = () => {} }: Props) => {
+export function IconButton({ icon, size, onClick = () => {} }: Readonly<Props>) {
   return (
     <button className={buttonStyle} onClick={onClick}>
       <span className={buttoninnerStyle}>
@@ -22,7 +22,7 @@ export const IconButton = ({ icon, size, onClick = () => {} }: Props) => {
       </span>
     </button>
   );
-};
+}
 
 const buttonStyle = cx(
   button(),
@@ -35,11 +35,9 @@ const buttonStyle = cx(
     height: '3.5rem',
   }),
 );
-
 const buttoninnerStyle = css({
   position: 'relative',
 });
-
 const iconStyle = css({
   width: '3.1rem',
   height: '3.1rem',
