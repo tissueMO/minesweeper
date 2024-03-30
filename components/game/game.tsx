@@ -42,7 +42,7 @@ export function Game() {
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
   const isStarted = state !== State.Initialized;
-  const isEnded = state === State.Completed || state === State.Dead;
+  const isEnded = [State.Completed, State.Dead].includes(state);
 
   const emotion = {
     [State.Playing]: 'smile',
