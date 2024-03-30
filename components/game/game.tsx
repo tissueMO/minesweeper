@@ -68,7 +68,9 @@ export function Game() {
   };
 
   const onShuffle = () => {
-    setRetry((prev) => prev + 1);
+    if (state === State.Playing) {
+      setRetry((prev) => prev + 1);
+    }
   };
 
   const stop = () => {
