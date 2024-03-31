@@ -55,8 +55,8 @@ export function useMinesweeper({
   const init = (width: number, height: number) => {
     setTiles(
       [...Array(width * height)].map((_, i) => ({
-        x: convertXY(i)[0],
-        y: convertXY(i)[1],
+        x: convertXY(i).x,
+        y: convertXY(i).y,
         flagged: false,
         badFlagged: false,
         opened: false,
@@ -160,7 +160,7 @@ export function useMinesweeper({
       // 地雷を配置
       let count = mines;
       while (count > 0) {
-        const [x, y] = convertXY(Math.floor(Math.random() * width * height));
+        const { x, y } = convertXY(Math.floor(Math.random() * width * height));
 
         if (!tile(x, y).hasMine && !tile(x, y).opened && (!first || first.x !== x || first.y !== y)) {
           tile(x, y).hasMine = true;
@@ -196,7 +196,11 @@ export function useMinesweeper({
   };
 
   // 二次元座標に変換
-  const convertXY = (i: number) => [i % width, Math.floor(i / width)] as const;
+  const convertXY = (i: number) =>
+    ({
+      x: i % width,
+      y: Math.floor(i / width),
+    } as const);
 
   const minesweeper = {
     tiles,
