@@ -26,19 +26,19 @@ export default function Home() {
   };
 
   return (
-    <main className={mainStyle}>
-      <div className={headerStyle}>
+    <main className={styles.main}>
+      <div className={styles.header}>
         <Logo />
-        <span className={titleStyle}>マインスイーパー</span>
+        <span className={styles.title}>マインスイーパー</span>
         <Logo />
       </div>
 
       <Flipper flipKey={games.join()}>
-        <div className={addGameButtonWrapperStyle}>
+        <div className={styles.addGameButtonWrapper}>
           <IconButton icon={faPlus} size="3x" onClick={newGame} />
         </div>
 
-        <div className={gameWrapperStyle}>
+        <div className={styles.gameWrapper}>
           {games.map((g) => (
             <Flipped key={g} flipId={g}>
               <div>
@@ -52,17 +52,19 @@ export default function Home() {
   );
 }
 
-const mainStyle = flex({ direction: 'column' });
-const titleStyle = css({ margin: '0 0.1rem', fontWeight: '900' });
-const headerStyle = cx(
-  center(),
-  flex({ align: 'center' }),
-  css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' }),
-);
-const gameWrapperStyle = flex({ wrap: 'wrap', justifyContent: 'center' });
-const addGameButtonWrapperStyle = cx(
-  center(),
-  css({
-    margin: '1rem',
-  }),
-);
+const styles = {
+  main: flex({ direction: 'column' }),
+
+  title: css({ margin: '0 0.1rem', fontWeight: '900' }),
+
+  header: cx(center(), flex({ align: 'center' }), css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' })),
+
+  gameWrapper: flex({ wrap: 'wrap', justifyContent: 'center' }),
+
+  addGameButtonWrapper: cx(
+    center(),
+    css({
+      margin: '1rem',
+    }),
+  ),
+};

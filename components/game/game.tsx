@@ -89,12 +89,12 @@ export function Game() {
   };
 
   return (
-    <div className={wrapperStyle}>
-      <div className={controllersStyle}>
-        <label className={labelStyle}>難易度:</label>
+    <div className={styles.wrapper}>
+      <div className={styles.controllers}>
+        <label className={styles.label}>難易度:</label>
         {!isStarted ? (
           // ゲーム開始前までは難易度変更OK
-          <select className={comboBoxStyle} onChange={(e) => onLevelChange(Number.parseInt(e.target.value))}>
+          <select className={styles.comboBox} onChange={(e) => onLevelChange(Number.parseInt(e.target.value))}>
             {Object.entries(LEVELS).map(([index, { caption }]) => (
               <option key={index} value={index}>
                 {caption}
@@ -108,8 +108,8 @@ export function Game() {
       </div>
 
       <div className={center()}>
-        <div className={panelWrapperStyle}>
-          <div className={panelHeaderStyle}>
+        <div className={styles.panelWrapper}>
+          <div className={styles.panelHeader}>
             <Digits value={selectedLevel.mines} />
             <NikoChanButton emotion={emotion} size="3x" onClick={onShuffle} className={isEnded ? 'disabled' : ''} />
             <Digits value={seconds} />
@@ -129,36 +129,43 @@ export function Game() {
   );
 }
 
-const wrapperStyle = css({ margin: '2rem' });
-const labelStyle = css({ marginRight: '0.5rem' });
-const comboBoxStyle = css({
-  width: '5rem',
-  fontSize: '85%',
-  borderWidth: '1px',
-  borderColor: 'rgb(118, 118, 118)',
-});
-const controllersStyle = cx(center(), css({ marginBottom: '1rem' }), flex({ align: 'center' }));
-const panelWrapperStyle = cx(
-  flex({ direction: 'column', justifyContent: 'center' }),
-  css({ padding: '12px' }),
-  border3d({
-    borderWidth: '8px',
-    leftTopColor: '#eeeeee',
-    rightBottomColor: '#808080',
-    backgroundColor: 'lightgray',
+const styles = {
+  wrapper: css({ margin: '2rem' }),
+
+  label: css({ marginRight: '0.5rex' }),
+
+  comboBox: css({
+    width: '5rem',
+    fontSize: '85%',
+    borderWidth: '1px',
+    borderColor: 'rgb(118, 118, 118)',
   }),
-);
-const panelHeaderStyle = cx(
-  flex({ wrap: 'nowrap', alignItems: 'center' }),
-  css({
-    margin: '0 auto',
-    marginBottom: '0.5rem',
-    padding: '0.5rem 0.8rem',
-  }),
-  border3d({
-    borderWidth: '4px',
-    leftTopColor: '#808080',
-    rightBottomColor: '#dfdfdf',
-    backgroundColor: 'lightgray',
-  }),
-);
+
+  controllers: cx(center(), css({ marginBottom: '1rem' }), flex({ align: 'center' })),
+
+  panelWrapper: cx(
+    flex({ direction: 'column', justifyContent: 'center' }),
+    css({ padding: '12px' }),
+    border3d({
+      borderWidth: '8px',
+      leftTopColor: '#eeeeee',
+      rightBottomColor: '#808080',
+      backgroundColor: 'lightgray',
+    }),
+  ),
+
+  panelHeader: cx(
+    flex({ wrap: 'nowrap', alignItems: 'center' }),
+    css({
+      margin: '0 auto',
+      marginBottom: '0.5rem',
+      padding: '0.5rem 0.8rem',
+    }),
+    border3d({
+      borderWidth: '4px',
+      leftTopColor: '#808080',
+      rightBottomColor: '#dfdfdf',
+      backgroundColor: 'lightgray',
+    }),
+  ),
+};

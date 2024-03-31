@@ -74,7 +74,7 @@ export function Tile({
       <FontAwesomeIcon
         icon={faBomb}
         size="xl"
-        className={cx(tileIconStyle, mineTransition, css({ color: 'black' }))}
+        className={cx(styles.tileIcon, styles.mine, css({ color: 'black' }))}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
@@ -84,7 +84,7 @@ export function Tile({
       <FontAwesomeIcon
         icon={faFlag}
         size="xl"
-        className={cx(tileIconStyle, css({ color: 'red' }))}
+        className={cx(styles.tileIcon, css({ color: 'red' }))}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
@@ -94,14 +94,14 @@ export function Tile({
       <FontAwesomeIcon
         icon={faTimes}
         size="xl"
-        className={cx(tileIconStyle, css({ color: 'red' }))}
+        className={cx(styles.tileIcon, css({ color: 'red' }))}
         onContextMenu={(e) => e.preventDefault()}
       />
     );
   }
 
   return (
-    <div className={[tileStyle, flagged || frozen ? 'disabled' : ''].join(' ')}>
+    <div className={[styles.tile, flagged || frozen ? 'disabled' : ''].join(' ')}>
       <label
         onClick={open}
         onMouseUp={onMouseUp}
@@ -109,7 +109,7 @@ export function Tile({
         onTouchEnd={onTouchEnd}
         onContextMenu={(e) => e.preventDefault()}
         className={[
-          labelStyle,
+          styles.label,
           flagged ? 'flagged' : '',
           opened ? 'opened' : '',
           opened && !hasMine ? `number-${number}` : '',
@@ -125,103 +125,109 @@ export function Tile({
 
 const BASE_SIZE = 32;
 
-const tileStyle = cx(
-  button(),
-  css({
-    position: 'relative',
-    userSelect: 'none',
-  }),
-);
-const tileIconStyle = css({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%) scale(1)',
-  userSelect: 'none',
-});
-const mineTransition = css({
-  animation: 'bounceIn 0.5s',
-});
 const numberStyleBase = {
   fontSize: `${BASE_SIZE - 8}px`,
   lineHeight: `${BASE_SIZE}px`,
   fontWeight: '900',
 };
-const labelStyle = css({
-  width: `${BASE_SIZE}px`,
-  height: `${BASE_SIZE}px`,
-  display: 'block',
-  textAlign: 'center',
-  userSelect: 'none',
 
-  '&.opened': {
-    background: 'lightgray',
-    border: 'dotted 1px #333',
-    boxSizing: 'border-box',
+const styles = {
+  tile: cx(
+    button(),
+    css({
+      position: 'relative',
+      userSelect: 'none',
+    }),
+  ),
 
-    '&.mine': {
-      bgColor: 'red',
+  tileIcon: css({
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) scale(1)',
+    userSelect: 'none',
+  }),
 
-      '&.flagged': {
-        bgColor: 'yellow',
-      },
-    },
+  mine: css({
+    animation: 'bounceIn 0.5s',
+  }),
 
-    '&.number-1:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"1"',
-        color: 'blue',
+  label: css({
+    width: `${BASE_SIZE}px`,
+    height: `${BASE_SIZE}px`,
+    display: 'block',
+    textAlign: 'center',
+    userSelect: 'none',
+
+    '&.opened': {
+      background: 'lightgray',
+      border: 'dotted 1px #333',
+      boxSizing: 'border-box',
+
+      '&.mine': {
+        bgColor: 'red',
+
+        '&.flagged': {
+          bgColor: 'yellow',
+        },
+      },
+
+      '&.number-1:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"1"',
+          color: 'blue',
+        },
+      },
+      '&.number-2:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"2"',
+          color: 'green',
+        },
+      },
+      '&.number-3:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"3"',
+          color: 'red',
+        },
+      },
+      '&.number-4:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"4"',
+          color: 'darkblue',
+        },
+      },
+      '&.number-5:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"5"',
+          color: 'darkred',
+        },
+      },
+      '&.number-6:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"6"',
+          color: 'darkturquoise',
+        },
+      },
+      '&.number-7:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"7"',
+          color: 'black',
+        },
+      },
+      '&.number-8:not(.flagged-bad)': {
+        _after: {
+          ...numberStyleBase,
+          content: '"8"',
+          color: 'dimgray',
+        },
       },
     },
-    '&.number-2:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"2"',
-        color: 'green',
-      },
-    },
-    '&.number-3:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"3"',
-        color: 'red',
-      },
-    },
-    '&.number-4:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"4"',
-        color: 'darkblue',
-      },
-    },
-    '&.number-5:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"5"',
-        color: 'darkred',
-      },
-    },
-    '&.number-6:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"6"',
-        color: 'darkturquoise',
-      },
-    },
-    '&.number-7:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"7"',
-        color: 'black',
-      },
-    },
-    '&.number-8:not(.flagged-bad)': {
-      _after: {
-        ...numberStyleBase,
-        content: '"8"',
-        color: 'dimgray',
-      },
-    },
-  },
-});
+  }),
+};

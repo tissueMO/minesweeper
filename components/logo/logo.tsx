@@ -17,11 +17,15 @@ export function Logo() {
       width={180}
       height={37}
       priority
-      className={css({
-        width: '5rem',
-        height: '5rem',
-        margin: '0',
-      })}
+      className={styles.image}
     />
   );
 }
+
+const styles = {
+  image: css({
+    width: '5rem',
+    height: '5rem',
+    margin: '0',
+  }),
+};

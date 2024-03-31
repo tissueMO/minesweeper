@@ -16,31 +16,33 @@ type Props = {
  */
 export function IconButton({ icon, size, onClick = () => {} }: Readonly<Props>) {
   return (
-    <button className={buttonStyle} onClick={onClick}>
-      <span className={buttoninnerStyle}>
-        <FontAwesomeIcon icon={icon} size={size} className={iconStyle} />
+    <button className={styles.button} onClick={onClick}>
+      <span className={styles.buttoninner}>
+        <FontAwesomeIcon icon={icon} size={size} className={styles.icon} />
       </span>
     </button>
   );
 }
 
-const buttonStyle = cx(
-  button(),
-  css({
-    minWidth: '0',
-    minHeight: '0',
-    padding: '0.25rem',
-    margin: '0 0.5rem',
-    width: '3.5rem',
-    height: '3.5rem',
+const styles = {
+  button: cx(
+    button(),
+    css({
+      minWidth: '0',
+      minHeight: '0',
+      padding: '0.25rem',
+      margin: '0 0.5rem',
+      width: '3.5rem',
+      height: '3.5rem',
+    }),
+  ),
+  buttoninner: css({
+    position: 'relative',
   }),
-);
-const buttoninnerStyle = css({
-  position: 'relative',
-});
-const iconStyle = css({
-  width: '3.1rem',
-  height: '3.1rem',
-  margin: '0',
-  color: '#444',
-});
+  icon: css({
+    width: '3.1rem',
+    height: '3.1rem',
+    margin: '0',
+    color: '#444',
+  }),
+};

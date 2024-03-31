@@ -19,20 +19,22 @@ export function Digits({ value = 0, size = 3 }: Readonly<Props>) {
   const digits = [...paddingValue].map((v) => Number.parseInt(v));
 
   return (
-    <div
-      className={cx(
-        flex({ alignSelf: 'flex-end' }),
-        border3d({
-          borderWidth: '2px',
-          leftTopColor: '#808080',
-          rightBottomColor: '#dfdfdf',
-          backgroundColor: 'lightgray',
-        }),
-      )}
-    >
+    <div className={styles.digits}>
       {digits.map((d, i) => {
         return <Digit key={i} value={d} />;
       })}
     </div>
   );
 }
+
+const styles = {
+  digits: cx(
+    flex({ alignSelf: 'flex-end' }),
+    border3d({
+      borderWidth: '2px',
+      leftTopColor: '#808080',
+      rightBottomColor: '#dfdfdf',
+      backgroundColor: 'lightgray',
+    }),
+  ),
+};

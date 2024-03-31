@@ -38,9 +38,9 @@ export function Tiles({
   }, [retry]);
 
   return (
-    <div className={panelStyle}>
+    <div className={styles.panel}>
       {rows.map((row, y) => (
-        <div key={y} className={rowStyle}>
+        <div key={y} className={styles.row}>
           {row.map((tile, x) => (
             <Tile
               key={x}
@@ -59,36 +59,39 @@ export function Tiles({
   );
 }
 
-const panelStyle = border3d({
-  borderWidth: '5px',
-  leftTopColor: '#808080',
-  rightBottomColor: '#dfdfdf',
-  backgroundColor: '#d3d3d3',
-});
-const rowStyle = cx(
-  flex({ direction: 'row' }),
-  css({
-    _first: {
-      '& label': {
-        borderTop: 'none',
-      },
-    },
-    _last: {
-      '& label': {
-        borderBottom: 'none',
-      },
-    },
-    '& div': {
+const styles = {
+  panel: border3d({
+    borderWidth: '5px',
+    leftTopColor: '#808080',
+    rightBottomColor: '#dfdfdf',
+    backgroundColor: '#d3d3d3',
+  }),
+
+  row: cx(
+    flex({ direction: 'row' }),
+    css({
       _first: {
         '& label': {
-          borderLeft: 'none',
+          borderTop: 'none',
         },
       },
       _last: {
         '& label': {
-          borderRight: 'none',
+          borderBottom: 'none',
         },
       },
-    },
-  }),
-);
+      '& div': {
+        _first: {
+          '& label': {
+            borderLeft: 'none',
+          },
+        },
+        _last: {
+          '& label': {
+            borderRight: 'none',
+          },
+        },
+      },
+    }),
+  ),
+};

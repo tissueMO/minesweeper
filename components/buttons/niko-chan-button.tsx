@@ -24,37 +24,41 @@ export function NikoChanButton({ className, emotion, size, onClick = () => {} }:
     }[emotion] ?? faFaceSmile;
 
   return (
-    <button className={cx(buttonStyle, className)} onClick={onClick}>
-      <span className={buttonInnerStyle}>
-        <FontAwesomeIcon icon={icon} size={size} className={iconStyle} />
+    <button className={cx(styles.button, className)} onClick={onClick}>
+      <span className={styles.innerButton}>
+        <FontAwesomeIcon icon={icon} size={size} className={styles.icon} />
       </span>
     </button>
   );
 }
 
-const buttonStyle = cx(
-  button(),
-  css({
-    minWidth: '0',
-    minHeight: '0',
-    padding: '0.25rem',
-    margin: '0 0.5rem',
+const styles = {
+  button: cx(
+    button(),
+    css({
+      minWidth: '0',
+      minHeight: '0',
+      padding: '0.25rem',
+      margin: '0 0.5rem',
+    }),
+  ),
+
+  innerButton: cx(
+    flex({ justifyContent: 'center', alignItems: 'center' }),
+    css({
+      margin: '0 auto',
+      width: '3rem',
+      height: '3rem',
+      borderRadius: '50%',
+      position: 'relative',
+      bgColor: '#000',
+    }),
+  ),
+
+  icon: css({
+    width: '2.9rem',
+    height: '2.9rem',
+    margin: '0',
+    color: 'yellow',
   }),
-);
-const buttonInnerStyle = cx(
-  flex({ justifyContent: 'center', alignItems: 'center' }),
-  css({
-    margin: '0 auto',
-    width: '3rem',
-    height: '3rem',
-    borderRadius: '50%',
-    position: 'relative',
-    bgColor: '#000',
-  }),
-);
-const iconStyle = css({
-  width: '2.9rem',
-  height: '2.9rem',
-  margin: '0',
-  color: 'yellow',
-});
+};
