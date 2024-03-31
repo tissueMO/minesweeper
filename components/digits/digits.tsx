@@ -6,23 +6,23 @@ import { Digit } from './digit';
 
 type Props = {
   value: number;
-  size?: number;
+  length?: number;
 };
 
 /**
  * 7セグメントデジタル数字 (複数桁)
  */
-export function Digits({ value = 0, size = 3 }: Readonly<Props>) {
+export function Digits({ value = 0, length = 3 }: Readonly<Props>) {
   // 桁数を最大幅に揃えて分離する
-  const limitedValue = Math.max(0, Math.min(value, 10 ** size - 1));
-  const paddingValue = limitedValue.toString().padStart(size, '0');
+  const limitedValue = Math.max(0, Math.min(value, 10 ** length - 1));
+  const paddingValue = limitedValue.toString().padStart(length, '0');
   const digits = [...paddingValue].map((v) => Number.parseInt(v));
 
   return (
     <div className={styles.digits}>
-      {digits.map((d, i) => {
-        return <Digit key={i} value={d} />;
-      })}
+      {digits.map((d, i) => (
+        <Digit key={i} value={d} />
+      ))}
     </div>
   );
 }
