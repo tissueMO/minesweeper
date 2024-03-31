@@ -27,11 +27,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.header}>
-        <Logo />
-        <span className={styles.title}>マインスイーパー</span>
-        <Logo />
-      </div>
+      <Logo title="マインスイーパー" />
 
       <Flipper flipKey={games.join()}>
         <div className={styles.addGameButtonWrapper}>
@@ -54,10 +50,6 @@ export default function Home() {
 
 const styles = {
   main: flex({ direction: 'column' }),
-
-  title: css({ margin: '0 0.1rem', fontWeight: '900' }),
-
-  header: cx(center(), flex({ align: 'center' }), css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' })),
 
   gameWrapper: flex({ wrap: 'wrap', justifyContent: 'center' }),
 
