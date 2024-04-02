@@ -56,25 +56,25 @@ export function Game() {
     timer.current = null;
   };
   const reset = () => {
-    setState(State.Initialized);
     stop();
+    setState(State.Initialized);
     setSeconds(0);
     setRetry(0);
     setId(new Date().getTime());
   };
 
   const onStart = () => {
-    setState(State.Playing);
     stop();
+    setState(State.Playing);
     timer.current = setInterval(() => setSeconds((s) => s + 1), 1000);
   };
   const onEnd = (abort: boolean) => {
-    setState(abort ? State.Dead : State.Completed);
     stop();
+    setState(abort ? State.Dead : State.Completed);
   };
   const onLevelChange = (index: number) => {
-    setLevel({ ...LEVELS[index] });
     reset();
+    setLevel({ ...LEVELS[index] });
   };
   const onShuffle = () => {
     if (state === State.Playing) {

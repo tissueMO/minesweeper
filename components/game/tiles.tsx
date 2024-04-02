@@ -33,7 +33,7 @@ export function Tiles({
 
   const rows = chunkArray(minesweeper.tiles, width);
 
-  // ゲーム中の強制シャッフル
+  // 強制シャッフル
   useEffect(() => {
     minesweeper.shuffle();
   }, [retry]);
