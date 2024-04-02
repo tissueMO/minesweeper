@@ -5,6 +5,7 @@ import { border3d, flex } from '@/styled-system/patterns';
 import { useEffect } from 'react';
 import { Tile } from './tile';
 import { useMinesweeper } from './tiles.hooks';
+import { chunkArray } from '@/utils';
 
 type Props = {
   width: number;
@@ -30,7 +31,7 @@ export function Tiles({
 }: Readonly<Props>) {
   const minesweeper = useMinesweeper({ width, height, mines, frozen, onStart, onEnd });
 
-  const rows = [...Array(height)].map((_, y) => minesweeper.tiles.slice(y * width, (y + 1) * width));
+  const rows = chunkArray(minesweeper.tiles, width);
 
   // ゲーム中の強制シャッフル
   useEffect(() => {
@@ -68,7 +69,9 @@ const styles = {
   }),
 
   row: cx(
-    flex({ direction: 'row' }),
+    flex({
+      direction: 'row',
+    }),
     css({
       _first: {
         '& label': {

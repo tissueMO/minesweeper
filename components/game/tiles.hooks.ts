@@ -1,4 +1,5 @@
 import { State } from '@/types';
+import { createArray } from '@/utils';
 import { useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
   mines: number;
   frozen?: boolean;
   onStart?: () => void;
-  onEnd?: (completed: boolean) => void;
+  onEnd?: (abort: boolean) => void;
 };
 
 type Tile = {
@@ -54,7 +55,7 @@ export function useMinesweeper({
   // 空の盤面を生成
   const init = (width: number, height: number) => {
     setTiles(
-      [...Array(width * height)].map((_, i) => ({
+      createArray(width * height).map((_, i) => ({
         x: convertXY(i).x,
         y: convertXY(i).y,
         flagged: false,
@@ -95,7 +96,7 @@ export function useMinesweeper({
         );
       });
 
-    onEnd?.(false);
+    onEnd?.(true);
   };
 
   // ゲームクリア
@@ -105,7 +106,7 @@ export function useMinesweeper({
     // 残ったタイルにフラグを付ける
     tiles.filter((t) => !t.opened).forEach((t) => flag(t, true));
 
-    onEnd?.(true);
+    onEnd?.(false);
   };
 
   // タイルオープン
@@ -145,6 +146,7 @@ export function useMinesweeper({
   const flag = (t: Tile, value?: boolean) => {
     if (!frozen && !t.opened) {
       t.flagged = value !== undefined ? value : !t.flagged;
+
       setTiles([...tiles]);
     }
   };
@@ -190,17 +192,20 @@ export function useMinesweeper({
       [1, 1],
     ];
 
-    return OFFSETS.map(([offsetX, offsetY]) => [t.x + offsetX, t.y + offsetY])
+    return OFFSETS
+      // 周辺タイルの座標に変換
+      .map(([offsetX, offsetY]) => [t.x + offsetX, t.y + offsetY])
+      // 範囲外の座標を除去
       .filter(([x, y]) => 0 <= x && x < width && 0 <= y && y < height)
+      // 周辺タイルを取得
       .map(([x, y]) => tile(x, y, tiles));
   };
 
   // 二次元座標に変換
-  const convertXY = (i: number) =>
-    ({
-      x: i % width,
-      y: Math.floor(i / width),
-    } as const);
+  const convertXY = (i: number) => ({
+    x: i % width,
+    y: Math.floor(i / width),
+  } as const);
 
   const minesweeper = {
     tiles,

@@ -15,7 +15,7 @@ type Props = {
 export function Digits({ value = 0, length = 3 }: Readonly<Props>) {
   // 桁数を最大幅に揃えて分離する
   const limitedValue = Math.max(0, Math.min(value, 10 ** length - 1));
-  const paddingValue = limitedValue.toString().padStart(length, '0');
+  const paddingValue = `${limitedValue}`.padStart(length, '0');
   const digits = [...paddingValue].map((v) => Number.parseInt(v));
 
   return (
@@ -29,7 +29,9 @@ export function Digits({ value = 0, length = 3 }: Readonly<Props>) {
 
 const styles = {
   digits: cx(
-    flex({ alignSelf: 'flex-end' }),
+    flex({
+      alignSelf: 'flex-end',
+    }),
     border3d({
       borderWidth: '2px',
       leftTopColor: '#808080',

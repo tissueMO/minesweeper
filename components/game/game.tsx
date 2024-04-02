@@ -34,10 +34,10 @@ const LEVELS: Level[] = [
  * マインスイーパー
  */
 export function Game() {
-  const [gameId, setGameId] = useState(new Date().getTime());
-  const [selectedLevel, setSelectedLevel] = useState({ ...LEVELS[0] });
-  const [seconds, setSeconds] = useState(0);
+  const [id, setId] = useState(new Date().getTime());
+  const [level, setLevel] = useState({ ...LEVELS[0] });
   const [state, setState] = useState(State.Initialized);
+  const [seconds, setSeconds] = useState(0);
   const [retry, setRetry] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>();
 
@@ -51,41 +51,35 @@ export function Game() {
     [State.Dead]: 'dizzy',
   }[state];
 
+  const stop = () => {
+    clearInterval(timer?.current ?? undefined);
+    timer.current = null;
+  };
+  const reset = () => {
+    setState(State.Initialized);
+    stop();
+    setSeconds(0);
+    setRetry(0);
+    setId(new Date().getTime());
+  };
+
   const onStart = () => {
     setState(State.Playing);
     stop();
     timer.current = setInterval(() => setSeconds((s) => s + 1), 1000);
   };
-
-  const onEnd = (completed: boolean) => {
-    setState(completed ? State.Completed : State.Dead);
+  const onEnd = (abort: boolean) => {
+    setState(abort ? State.Dead : State.Completed);
     stop();
   };
-
   const onLevelChange = (index: number) => {
-    setSelectedLevel({ ...LEVELS[index] });
+    setLevel({ ...LEVELS[index] });
     reset();
   };
-
   const onShuffle = () => {
     if (state === State.Playing) {
       setRetry((prev) => prev + 1);
     }
-  };
-
-  const stop = () => {
-    clearInterval(timer?.current ?? undefined);
-    timer.current = null;
-  };
-
-  const reset = () => {
-    setState(State.Initialized);
-    setSeconds(0);
-    setRetry(0);
-    stop();
-
-    // 盤面リセット
-    setGameId(new Date().getTime());
   };
 
   return (
@@ -103,22 +97,22 @@ export function Game() {
           </select>
         ) : (
           // ゲーム開始後は難易度変更NG
-          <span>{selectedLevel.caption}</span>
+          <span>{level.caption}</span>
         )}
       </div>
 
       <div className={center()}>
         <div className={styles.panelWrapper}>
           <div className={styles.panelHeader}>
-            <Digits value={selectedLevel.mines} />
+            <Digits value={level.mines} />
             <NikoChanButton emotion={emotion} size="3x" onClick={onShuffle} className={isEnded ? 'disabled' : ''} />
             <Digits value={seconds} />
           </div>
           <Tiles
-            key={gameId}
-            width={selectedLevel.width}
-            height={selectedLevel.height}
-            mines={selectedLevel.mines}
+            key={id}
+            width={level.width}
+            height={level.height}
+            mines={level.mines}
             retry={retry}
             onStart={onStart}
             onEnd={onEnd}
@@ -130,9 +124,13 @@ export function Game() {
 }
 
 const styles = {
-  wrapper: css({ margin: '2rem' }),
+  wrapper: css({
+    margin: '2rem',
+  }),
 
-  label: css({ marginRight: '0.5rex' }),
+  label: css({
+    marginRight: '0.5rex',
+  }),
 
   comboBox: css({
     width: '5rem',
@@ -141,11 +139,24 @@ const styles = {
     borderColor: 'rgb(118, 118, 118)',
   }),
 
-  controllers: cx(center(), css({ marginBottom: '1rem' }), flex({ align: 'center' })),
+  controllers: cx(
+    center(),
+    css({
+      marginBottom: '1rem',
+    }),
+    flex({
+      align: 'center',
+    }),
+  ),
 
   panelWrapper: cx(
-    flex({ direction: 'column', justifyContent: 'center' }),
-    css({ padding: '12px' }),
+    flex({
+      direction: 'column',
+      justifyContent: 'center',
+    }),
+    css({
+      padding: '12px',
+    }),
     border3d({
       borderWidth: '8px',
       leftTopColor: '#eeeeee',
@@ -155,7 +166,10 @@ const styles = {
   ),
 
   panelHeader: cx(
-    flex({ wrap: 'nowrap', alignItems: 'center' }),
+    flex({
+      wrap: 'nowrap',
+      alignItems: 'center',
+    }),
     css({
       margin: '0 auto',
       marginBottom: '0.5rem',

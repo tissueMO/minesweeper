@@ -10,7 +10,9 @@ type Props = {
  * 7セグメントデジタル数字 (1桁)
  */
 export const Digit = ({ value = 0 }: Readonly<Props>) => {
-  return <div className={cx(styles.display, styles.digit[value])} />;
+  return (
+    <div className={cx(styles.display, styles.digit[value])} />
+  );
 };
 
 const SIZE_RATE = 0.5;

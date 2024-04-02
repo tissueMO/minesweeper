@@ -30,11 +30,11 @@ export default function Home() {
       <Logo title="マインスイーパー" />
 
       <Flipper flipKey={games.join()}>
-        <div className={styles.addGameButtonWrapper}>
+        <div className={styles.newGameButtonWrapper}>
           <IconButton icon={faPlus} size="3x" onClick={newGame} />
         </div>
 
-        <div className={styles.gameWrapper}>
+        <div className={styles.gamesWrapper}>
           {games.map((g) => (
             <Flipped key={g} flipId={g}>
               <div>
@@ -49,14 +49,19 @@ export default function Home() {
 }
 
 const styles = {
-  main: flex({ direction: 'column' }),
+  main: flex({
+    direction: 'column',
+  }),
 
-  gameWrapper: flex({ wrap: 'wrap', justifyContent: 'center' }),
-
-  addGameButtonWrapper: cx(
+  newGameButtonWrapper: cx(
     center(),
     css({
       margin: '1rem',
     }),
   ),
+
+  gamesWrapper: flex({
+    wrap: 'wrap',
+    justifyContent: 'center',
+  }),
 };

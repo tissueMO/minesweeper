@@ -18,7 +18,7 @@ export function Logo({ title }: Readonly<Props>) {
   const image = (
     <Image
       src={`${BASE_PATH}/logo.svg`}
-      alt="Minesweeper Logo"
+      alt="Logo"
       width={180}
       height={37}
       priority
@@ -36,9 +36,22 @@ export function Logo({ title }: Readonly<Props>) {
 }
 
 const styles = {
-  wrapper: cx(center(), flex({ align: 'center' }), css({ fontSize: '3rem', marginBottom: '3rem', color: '#444' })),
+  wrapper: cx(
+    center(),
+    flex({
+      align: 'center',
+    }),
+    css({
+      fontSize: '3rem',
+      marginBottom: '3rem',
+      color: '#444',
+    }),
+  ),
 
-  title: css({ margin: '0 0.1rem', fontWeight: '900' }),
+  title: css({
+    margin: '0 0.1rem',
+    fontWeight: '900',
+  }),
 
   image: css({
     width: '5rem',

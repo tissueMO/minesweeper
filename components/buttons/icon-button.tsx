@@ -6,18 +6,19 @@ import { IconDefinition, SizeProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props = {
-  icon: IconDefinition;
+  className?: string;
   size?: SizeProp;
+  icon: IconDefinition;
   onClick?: () => void;
 };
 
 /**
  * アイコンボタン
  */
-export function IconButton({ icon, size, onClick = () => {} }: Readonly<Props>) {
+export function IconButton({ className, icon, size, onClick = () => {} }: Readonly<Props>) {
   return (
-    <button className={styles.button} onClick={onClick}>
-      <span className={styles.buttoninner}>
+    <button className={cx(styles.button, className)} onClick={onClick}>
+      <span className={styles.buttonInner}>
         <FontAwesomeIcon icon={icon} size={size} className={styles.icon} />
       </span>
     </button>
@@ -36,9 +37,11 @@ const styles = {
       height: '3.5rem',
     }),
   ),
-  buttoninner: css({
+
+  buttonInner: css({
     position: 'relative',
   }),
+
   icon: css({
     width: '3.1rem',
     height: '3.1rem',

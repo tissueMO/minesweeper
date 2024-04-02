@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props = {
   className?: string;
+  size?: SizeProp;
   emotion: string;
-  size: SizeProp;
   onClick: () => void;
 };
 
@@ -17,15 +17,14 @@ type Props = {
  * ニコちゃんボタン
  */
 export function NikoChanButton({ className, emotion, size, onClick = () => {} }: Readonly<Props>) {
-  const icon =
-    {
-      dizzy: faFaceDizzy,
-      'laugh-beam': faFaceLaughBeam,
-    }[emotion] ?? faFaceSmile;
+  const icon = {
+    dizzy: faFaceDizzy,
+    'laugh-beam': faFaceLaughBeam,
+  }[emotion] ?? faFaceSmile;
 
   return (
     <button className={cx(styles.button, className)} onClick={onClick}>
-      <span className={styles.innerButton}>
+      <span className={styles.buttonInner}>
         <FontAwesomeIcon icon={icon} size={size} className={styles.icon} />
       </span>
     </button>
@@ -43,8 +42,11 @@ const styles = {
     }),
   ),
 
-  innerButton: cx(
-    flex({ justifyContent: 'center', alignItems: 'center' }),
+  buttonInner: cx(
+    flex({
+      justifyContent: 'center',
+      alignItems: 'center',
+    }),
     css({
       margin: '0 auto',
       width: '3rem',
